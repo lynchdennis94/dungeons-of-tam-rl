@@ -21,9 +21,9 @@ class Engine:
         self.player = player
 
     def handle_enemy_turns(self):
-        for entity in self.game_map.entities - {self.player}:
-            if self.game_map.visible[entity.x, entity.y]:
-                print(f"The {entity.name} wonders when it will get to take a real turn")
+        for entity in set(self.game_map.actors) - {self.player}:
+            if entity.ai:
+                entity.ai.perform()
 
     def render(self, console: Console, context: Context) -> None:
         self.game_map.render(console)

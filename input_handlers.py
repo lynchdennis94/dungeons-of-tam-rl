@@ -4,10 +4,25 @@ from typing import Optional, TYPE_CHECKING
 
 import tcod.event
 
-from actions import Action, BumpAction, EscapeAction, MovementAction
+from actions import Action, BumpAction, EscapeAction, WaitAction
 
 if TYPE_CHECKING:
     from engine import Engine
+
+MOVE_KEYS = {
+    tcod.event.K_KP_1: (-1, 1),
+    tcod.event.K_KP_2: (0, 1),
+    tcod.event.K_KP_3: (1, 1),
+    tcod.event.K_KP_4: (-1, 0),
+    tcod.event.K_KP_6: (1, 0),
+    tcod.event.K_KP_7: (-1, -1),
+    tcod.event.K_KP_8: (0, -1),
+    tcod.event.K_KP_9: (1, -1),
+}
+
+WAIT_KEYS = {
+    tcod.event.K_KP_5
+}
 
 
 class EventHandler(tcod.event.EventDispatch[Action]):
@@ -25,6 +40,7 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
             self.engine.handle_enemy_turns()
             self.engine.update_fov()
+
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
         raise SystemExit()
 
@@ -33,24 +49,11 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         key = event.sym
         player = self.engine.player
 
-        if key == tcod.event.K_KP_8:
-            action = BumpAction(player, 0, -1)
-        elif key == tcod.event.K_KP_9:
-            action = BumpAction(player, 1, -1)
-        elif key == tcod.event.K_KP_6:
-            action = BumpAction(player, 1, 0)
-        elif key == tcod.event.K_KP_3:
-            action = BumpAction(player, 1, 1)
-        elif key == tcod.event.K_KP_2:
-            action = BumpAction(player, 0, 1)
-        elif key == tcod.event.K_KP_1:
-            action = BumpAction(player, -1, 1)
-        elif key == tcod.event.K_KP_4:
-            action = BumpAction(player, -1, 0)
-        elif key == tcod.event.K_KP_7:
-            action = BumpAction(player, -1, -1)
-        elif key == tcod.event.K_KP_5:
-            action = MovementAction(player, 0, 0) # Is this going to be a problem? Eventually this should be 'wait'
+        if key in MOVE_KEYS:
+            dx, dy= MOVE_KEYS[key]
+            action = BumpAction(player, dx, dy)
+        elif key in WAIT_KEYS:
+            action = WaitAction(player)
         elif key == tcod.event.K_ESCAPE:
             action = EscapeAction(player)
 
