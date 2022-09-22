@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+import copy
+
 import tcod
 
 from engine import Engine
-from entity import Entity
-from game_map import GameMap
+import entity_factories
 from input_handlers import EventHandler
 import procgen
 
@@ -16,6 +17,7 @@ MAP_HEIGHT = 45
 room_max_size = 10
 room_min_size = 6
 max_rooms = 30
+max_monsters_per_room = 2
 
 TILESET = tcod.tileset.load_tilesheet("resources/dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
 WINDOW_TITLE = "Yet Another Roguelike Tutorial"
@@ -23,12 +25,17 @@ EVENT_HANDLER = EventHandler()
 
 
 def main():
-    player = Entity(int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2), '@', (255, 255, 255), 8)
-    npc = Entity(22, 25, '@', (255, 255, 0), 8)
-    entities = {npc, player}
-    game_map = procgen.generate_dungeon(max_rooms, room_min_size, room_max_size, MAP_WIDTH, MAP_HEIGHT, player)
+    player = copy.deepcopy(entity_factories.player)
+    game_map = procgen.generate_dungeon(
+        max_rooms,
+        room_min_size,
+        room_max_size,
+        MAP_WIDTH,
+        MAP_HEIGHT,
+        max_monsters_per_room,
+        player)
 
-    engine = Engine(entities=entities, event_handler=EVENT_HANDLER, game_map=game_map, player=player)
+    engine = Engine(event_handler=EVENT_HANDLER, game_map=game_map, player=player)
     with tcod.context.new_terminal(
             SCREEN_WIDTH,
             SCREEN_HEIGHT,

@@ -15,23 +15,23 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         key = event.sym
 
         if key == tcod.event.K_KP_8:
-            action = MovementAction(0, -1)
+            action = BumpAction(0, -1)
         elif key == tcod.event.K_KP_9:
-            action = MovementAction(1, -1)
+            action = BumpAction(1, -1)
         elif key == tcod.event.K_KP_6:
-            action = MovementAction(1, 0)
+            action = BumpAction(1, 0)
         elif key == tcod.event.K_KP_3:
-            action = MovementAction(1, 1)
+            action = BumpAction(1, 1)
         elif key == tcod.event.K_KP_2:
-            action = MovementAction(0, 1)
+            action = BumpAction(0, 1)
         elif key == tcod.event.K_KP_1:
-            action = MovementAction(-1, 1)
+            action = BumpAction(-1, 1)
         elif key == tcod.event.K_KP_4:
-            action = MovementAction(-1, 0)
+            action = BumpAction(-1, 0)
         elif key == tcod.event.K_KP_7:
-            action = MovementAction(-1, -1)
+            action = BumpAction(-1, -1)
         elif key == tcod.event.K_KP_5:
-            action = MovementAction(0, 0)
+            action = MovementAction(0, 0) # Is this going to be a problem? Eventually this should be 'wait'
         elif key == tcod.event.K_ESCAPE:
             action = EscapeAction()
 
