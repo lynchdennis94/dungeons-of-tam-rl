@@ -23,8 +23,8 @@ EVENT_HANDLER = EventHandler()
 
 
 def main():
-    player = Entity(int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2), '@', (255, 255, 255))
-    npc = Entity(22, 25, '@', (255, 255, 0))
+    player = Entity(int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2), '@', (255, 255, 255), 8)
+    npc = Entity(22, 25, '@', (255, 255, 0), 8)
     entities = {npc, player}
     game_map = procgen.generate_dungeon(max_rooms, room_min_size, room_max_size, MAP_WIDTH, MAP_HEIGHT, player)
 
