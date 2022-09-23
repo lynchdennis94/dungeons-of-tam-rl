@@ -3,6 +3,7 @@ import copy
 
 import tcod
 
+import colors
 from engine import Engine
 import entity_factories
 import procgen
@@ -11,7 +12,7 @@ import procgen
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50
 MAP_WIDTH = 80
-MAP_HEIGHT = 45
+MAP_HEIGHT = 43
 
 room_max_size = 10
 room_min_size = 6
@@ -34,6 +35,8 @@ def main():
         max_monsters_per_room,
         engine)
     engine.update_fov()
+
+    engine.message_log.add_message("Hello and welcome, adventurer, to another dungeon!", colors.WELCOME_TEXT)
 
     with tcod.context.new_terminal(
             SCREEN_WIDTH,
