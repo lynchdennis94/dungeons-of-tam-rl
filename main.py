@@ -19,6 +19,7 @@ room_max_size = 10
 room_min_size = 6
 max_rooms = 30
 max_monsters_per_room = 2
+max_items_per_room = 1
 
 TILESET = tcod.tileset.load_tilesheet("resources/dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
 WINDOW_TITLE = "Yet Another Roguelike Tutorial"
@@ -34,6 +35,7 @@ def main():
         MAP_WIDTH,
         MAP_HEIGHT,
         max_monsters_per_room,
+        max_items_per_room,
         engine)
     engine.update_fov()
 
