@@ -5,6 +5,7 @@ from typing import Optional, TYPE_CHECKING
 import actions
 import colors
 import components.inventory
+import exceptions
 from components.base_component import BaseComponent
 from exceptions import Impossible
 
@@ -26,6 +27,12 @@ class Consumable(BaseComponent):
         """
         raise NotImplementedError()
 
+    def consume(self) -> None:
+        entity = self.parent
+        inventory = entity.parent
+        if isinstance(inventory, components.inventory.Inventory):
+            inventory.items.remove(entity)
+
 
 class HealingConsumable(Consumable):
     def __init__(self, amount: int):
@@ -44,8 +51,30 @@ class HealingConsumable(Consumable):
         else:
             raise Impossible(f"Your health is already full")
 
-    def consume(self) -> None:
-        entity = self.parent
-        inventory = entity.parent
-        if isinstance(inventory, components.inventory.Inventory):
-            inventory.items.remove(entity)
+
+class LightningDamageConsumable(Consumable):
+    def __init__(self, damage: int, maximum_range: int):
+        self.damage = damage
+        self.maximum_range = maximum_range
+
+    def activate(self, action: actions.ItemAction) -> None:
+        consumer = action.entity
+        target = None
+        closest_distance = self.maximum_range + 1.0
+
+        for actor in self.engine.game_map.actors:
+            if actor is not consumer and self.parent.gamemap.visible[actor.x, actor.y]:
+                distance = consumer.distance(actor.x, actor.y)
+
+                if distance < closest_distance:
+                    closest_distance = distance
+                    target = actor
+
+        if target:
+            self.engine.message_log.add_message(
+                f"A lightning bolt strikes the {target.name} with a loud clap, for {self.damage} damage!"
+            )
+            target.fighter.take_damage(self.damage)
+            self.consume()
+        else:
+            raise exceptions.Impossible("No enemy is close enough to strike.")
