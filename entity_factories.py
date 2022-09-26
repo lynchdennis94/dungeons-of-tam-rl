@@ -54,3 +54,10 @@ scroll_of_confusion = Item(
     name="Scroll of Confusion",
     consumable=consumable.ConfusionConsumable(number_of_turns=10)
 )
+
+scroll_of_fireball = Item(
+    char="~",
+    color=(255, 0, 0),
+    name="Scroll of Fireball",
+    consumable=consumable.FireballConsumable(damage=12, radius=3)
+)
