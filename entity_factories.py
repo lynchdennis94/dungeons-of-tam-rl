@@ -47,3 +47,10 @@ scroll_of_lightning = Item(
     name="Scroll of Lightning",
     consumable=consumable.LightningDamageConsumable(damage=20, maximum_range=5)
 )
+
+scroll_of_confusion = Item(
+    char="~",
+    color=(207, 63, 255),
+    name="Scroll of Confusion",
+    consumable=consumable.ConfusionConsumable(number_of_turns=10)
+)
