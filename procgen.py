@@ -64,14 +64,12 @@ def place_entities(room: RectangularRoom, dungeon: GameMap, maximum_monsters: in
 
             if item_chance < 0.55:
                 entity_factories.health_potion.spawn(dungeon, x, y)
-            else:
-                entity_factories.scroll_of_fireball.spawn(dungeon, x, y)
-            '''elif item_chance < 0.7:
+            elif item_chance < 0.7:
                 entity_factories.scroll_of_fireball.spawn(dungeon, x, y)
             elif item_chance < 0.85:
                 entity_factories.scroll_of_confusion.spawn(dungeon, x, y)
             else:
-                entity_factories.scroll_of_lightning.spawn(dungeon, x, y)'''
+                entity_factories.scroll_of_lightning.spawn(dungeon, x, y)
 
 
 def tunnel_between(start: Tuple[int, int], end: Tuple[int, int]) -> Iterator[Tuple[int, int]]:
