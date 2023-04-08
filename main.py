@@ -23,7 +23,7 @@ max_rooms = 30
 max_monsters_per_room = 2
 max_items_per_room = 1
 
-TILESET = tcod.tileset.load_tilesheet("resources/dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
+TILESET = tcod.tileset.load_tilesheet("resources/16x16-RogueYun-AgmEdit.png", 16, 16, tcod.tileset.CHARMAP_CP437)
 WINDOW_TITLE = "Yet Another Roguelike Tutorial"
 
 
