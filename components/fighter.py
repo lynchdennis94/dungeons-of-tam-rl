@@ -52,6 +52,7 @@ class Fighter(BaseComponent):
         else:
             death_message = f"{self.parent.name} is dead!"
             self.engine.message_log.add_message(death_message, colors.ENEMY_DIE)
+            self.engine.player.level.add_xp(self.parent.level.xp_given)
 
         self.parent.char = "%"
         self.parent.color = (191, 0, 0)
