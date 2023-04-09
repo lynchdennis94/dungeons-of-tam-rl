@@ -1,49 +1,29 @@
 #!/usr/bin/env python3
-import copy
 import traceback
 
 import tcod
 
 import colors
-from engine import Engine
-import entity_factories
+import setup_game
 import exceptions
 import input_handlers
-import procgen
 
 
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50
-MAP_WIDTH = 80
-MAP_HEIGHT = 43
-
-room_max_size = 10
-room_min_size = 6
-max_rooms = 30
-max_monsters_per_room = 2
-max_items_per_room = 1
 
 TILESET = tcod.tileset.load_tilesheet("resources/16x16-RogueYun-AgmEdit.png", 16, 16, tcod.tileset.CHARMAP_CP437)
 WINDOW_TITLE = "Yet Another Roguelike Tutorial"
 
+def save_game(handler: input_handlers.BaseEventHandler, filename: str) -> None:
+    """If the current event handler has an active Engine then save it"""
+    if isinstance(handler, input_handlers.EventHandler):
+        handler.engine.save_as(filename)
+        print("Game saved.")
 
 def main():
-    player = copy.deepcopy(entity_factories.player)
-    engine = Engine(player=player)
-    engine.game_map = procgen.generate_dungeon(
-        max_rooms,
-        room_min_size,
-        room_max_size,
-        MAP_WIDTH,
-        MAP_HEIGHT,
-        max_monsters_per_room,
-        max_items_per_room,
-        engine)
-    engine.update_fov()
 
-    engine.message_log.add_message("Hello and welcome, adventurer, to another dungeon!", colors.WELCOME_TEXT)
-
-    handler: input_handlers.BaseEventHandler = input_handlers.MainGameEventHandler(engine)
+    handler: input_handlers.BaseEventHandler = setup_game.MainMenu()
 
     with tcod.context.new_terminal(
             SCREEN_WIDTH,
@@ -68,10 +48,10 @@ def main():
         except exceptions.QuitWithoutSaving:
             raise
         except SystemExit:
-            # TODO: Save function here
+            save_game(handler, "savegame.sav")
             raise
         except BaseException:
-            # TODO: Save function here
+            save_game(handler, "savegame.sav")
             raise
 
 
