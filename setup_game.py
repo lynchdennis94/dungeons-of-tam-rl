@@ -12,12 +12,11 @@ import tcod
 import colors
 import entity_factories
 import input_handlers
-import procgen
 from engine import Engine
 from game_map import GameWorld
 
 # Load the background image and remove the alpha channel
-background_image = tcod.image.load("resources/menu_background.png")[:,:,:3]
+background_image = tcod.image.load("resources/menu_background.png")[:, :, :3]
 
 
 def new_game() -> Engine:
@@ -47,17 +46,8 @@ def new_game() -> Engine:
         "Hello and welcome, adventurer, to yet another dungeon!", colors.WELCOME_TEXT
     )
 
-    dagger = copy.deepcopy(entity_factories.dagger)
-    leather_armor = copy.deepcopy(entity_factories.leather_armor)
-    dagger.parent = player.inventory
-    leather_armor.parent = player.inventory
-
-    player.inventory.items.append(dagger)
-    player.equipment.toggle_equip(dagger, add_message=False)
-
-    player.inventory.items.append(leather_armor)
-    player.equipment.toggle_equip(leather_armor, add_message=False)
     return engine
+
 
 def load_game(filename: str) -> Engine:
     with open(filename, "rb") as f:
@@ -83,7 +73,7 @@ class MainMenu(input_handlers.BaseEventHandler):
 
         menu_width = 24
         for i, text in enumerate(
-            ["[N] Play a new game", "[C] Continue last game", "[Q] Quit"]
+                ["[N] Play a new game", "[C] Continue last game", "[Q] Quit"]
         ):
             console.print(
                 console.width // 2,
@@ -105,7 +95,7 @@ class MainMenu(input_handlers.BaseEventHandler):
                 return input_handlers.PopupMessage(self, "No saved game to load")
             except Exception as exc:
                 traceback.print_exc()
-                return input_handlers.PopupMessage(self, f"Fail")
+                return input_handlers.PopupMessage(self, f"Failure\n{exc}")
         elif event.sym == tcod.event.K_n:
             return input_handlers.MainGameEventHandler(new_game())
 
