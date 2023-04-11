@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from entity import Item
 
 MOVE_KEYS = {
+    # Numpad keys
     tcod.event.K_KP_1: (-1, 1),
     tcod.event.K_KP_2: (0, 1),
     tcod.event.K_KP_3: (1, 1),
@@ -24,6 +25,16 @@ MOVE_KEYS = {
     tcod.event.K_KP_7: (-1, -1),
     tcod.event.K_KP_8: (0, -1),
     tcod.event.K_KP_9: (1, -1),
+
+    # vim keys
+    tcod.event.K_b: (-1, 1),
+    tcod.event.K_j: (0, 1),
+    tcod.event.K_n: (1, 1),
+    tcod.event.K_h: (-1, 0),
+    tcod.event.K_l: (1, 0),
+    tcod.event.K_y: (-1, -1),
+    tcod.event.K_k: (0, -1),
+    tcod.event.K_u: (1, -1),
 }
 
 CURSOR_Y_KEYS = {
@@ -34,7 +45,8 @@ CURSOR_Y_KEYS = {
 }
 
 WAIT_KEYS = {
-    tcod.event.K_KP_5
+    tcod.event.K_KP_5,
+    tcod.event.K_r
 }
 
 CONFIRM_KEYS = {

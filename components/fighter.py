@@ -82,5 +82,3 @@ class Fighter(BaseComponent):
         self.parent.ai = None
         self.parent.render_order = RenderOrder.CORPSE
         self.parent.name = f"remains of {self.parent.name}"
-
-        print(death_message)
