@@ -143,20 +143,20 @@ class HistoryViewer(EventHandler):
             log_console,
             1,
             1,
-            log_console.width-2,
-            log_console.height-2,
-            self.engine.message_log.messages[:self.cursor+1])
+            log_console.width - 2,
+            log_console.height - 2,
+            self.engine.message_log.messages[:self.cursor + 1])
         log_console.blit(console, 3, 3)
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[MainGameEventHandler]:
         if event.sym in CURSOR_Y_KEYS:
             adjust = CURSOR_Y_KEYS[event.sym]
-            if adjust < 0 and self.cursor==0:
+            if adjust < 0 and self.cursor == 0:
                 self.cursor = self.log_length - 1
             elif adjust > 0 and self.cursor == self.log_length - 1:
                 self.cursor = 0
             else:
-                self.cursor=max(0, min(self.cursor + adjust, self.log_length - 1))
+                self.cursor = max(0, min(self.cursor + adjust, self.log_length - 1))
         elif event.sym == tcod.event.K_HOME:
             self.cursor = 0
         elif event.sym == tcod.event.K_END:
@@ -193,8 +193,9 @@ class AskUserEventHandler(EventHandler):
         """
         return MainGameEventHandler(self.engine)
 
+
 class CharacterScreenEventHandler(AskUserEventHandler):
-    TITLE="Character Information"
+    TITLE = "Character Information"
 
     def on_render(self, console: tcod.Console) -> None:
         super().on_render(console)
@@ -204,7 +205,7 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         else:
             x = 0
 
-        y=0
+        y = 0
 
         width = len(self.TITLE) + 4
 
@@ -220,7 +221,7 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         )
 
         console.print(
-            x=x+1, y=y+1, string=f"Level: {self.engine.player.level.current_level}"
+            x=x + 1, y=y + 1, string=f"Level: {self.engine.player.level.current_level}"
         )
 
         console.print(
@@ -232,12 +233,14 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         )
 
         console.print(
-            x=x + 1, y=y + 4, string=f"Attack: {self.engine.player.fighter.power}"
+            x=x + 1, y=y + 4, string=f"Strength: {self.engine.player.fighter.strength}"
         )
 
         console.print(
-            x=x + 1, y=y + 5, string=f"Defense: {self.engine.player.fighter.defense}"
+            x=x + 1, y=y + 5, string=f"Agility: {self.engine.player.fighter.agility}"
         )
+
+
 class LevelUpEventHandler(AskUserEventHandler):
     TITLE = "Level Up"
 
@@ -256,29 +259,31 @@ class LevelUpEventHandler(AskUserEventHandler):
             height=8,
             title=self.TITLE,
             clear=True,
-            fg=(255,255,255),
-            bg=(0,0,0)
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
         )
 
         console.print(x=x + 1, y=1, string="Congratulations! You level up!")
         console.print(x=x + 1, y=2, string="Select an attribute to increase")
 
         console.print(
-            x=x+1,
+            x=x + 1,
             y=4,
             string=f"a) Constitution (+20 HP, from {self.engine.player.fighter.max_hp})"
         )
 
         console.print(
-            x=x+1,
+            x=x + 1,
             y=5,
-            string=f"b) Strength (+1 attack, from {self.engine.player.fighter.power})"
+            string=f"b) Strength:{self.engine.player.fighter.strength + 1} "
+                   f"(+{(self.engine.player.fighter.strength + 1 - 10) // 2} to attack)"
         )
 
         console.print(
-            x=x+1,
+            x=x + 1,
             y=6,
-            string=f"c) Agility (+1 defense, from {self.engine.player.fighter.defense})"
+            string=f"c) Agility:{self.engine.player.fighter.agility + 1} "
+                   f"(+{(self.engine.player.fighter.agility + 1 - 10) // 2} to defense)"
         )
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
@@ -302,7 +307,6 @@ class LevelUpEventHandler(AskUserEventHandler):
     def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Optional[ActionOrHandler]:
         """Don't allow the player to click to exit the menu, like normal"""
         return None
-
 
 
 class InventoryEventHandler(AskUserEventHandler):
@@ -423,8 +427,8 @@ class SelectIndexHandler(AskUserEventHandler):
 
             x, y = self.engine.mouse_location
             dx, dy = MOVE_KEYS[key]
-            x += modifier*dx
-            y += modifier*dy
+            x += modifier * dx
+            y += modifier * dy
 
             x = max(0, min(x, self.engine.game_map.width - 1))
             y = max(0, min(y, self.engine.game_map.height - 1))
@@ -479,7 +483,7 @@ class AreaRangedAttackHandler(SelectIndexHandler):
             x=x - self.radius - 1,
             y=y - self.radius - 1,
             width=self.radius ** 2,
-            height = self.radius ** 2,
+            height=self.radius ** 2,
             fg=colors.RED,
             clear=False
         )
@@ -499,7 +503,7 @@ class MainGameEventHandler(EventHandler):
             return TakeStairsAction(player)
 
         if key in MOVE_KEYS:
-            dx, dy= MOVE_KEYS[key]
+            dx, dy = MOVE_KEYS[key]
             action = BumpAction(player, dx, dy)
         elif key == tcod.event.K_v:
             return HistoryViewer(self.engine)
@@ -530,6 +534,7 @@ class GameOverEventHandler(EventHandler):
 
     def ev_quit(self, event: tcod.event.Quit) -> None:
         self.on_quit()
+
     def ev_keydown(self, event: tcod.event.KeyDown) -> None:
         if event.sym == tcod.event.K_ESCAPE:
             raise SystemExit()
@@ -545,8 +550,8 @@ class PopupMessage(BaseEventHandler):
     def on_render(self, console: tcod.Console) -> None:
         """Render the parent and dim the result, then print the message on top"""
         self.parent.on_render(console)
-        console.tiles_rgb["fg"] //=8
-        console.tiles_rgb["bg"] //=8
+        console.tiles_rgb["fg"] //= 8
+        console.tiles_rgb["bg"] //= 8
 
         console.print(
             console.width // 2,

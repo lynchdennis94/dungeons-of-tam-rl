@@ -15,13 +15,20 @@ class Fighter(BaseComponent):
     parent: Actor
     rand_generator: Random
 
-    def __init__(self, hp: int, base_defense: int, min_base_power: int, max_base_power: int, strength: int):
+    def __init__(self, hp: int, agility: int, min_base_power: int, max_base_power: int, strength: int):
+        # Health attributes
         self.max_hp = hp
         self._hp = hp
-        self.base_defense = base_defense
+
+        # Unarmed power
         self.min_base_power = min_base_power
         self.max_base_power = max_base_power
+
+        # Player Attributes
         self.strength = strength
+        self.agility = agility
+
+        # Rand generator to generate rolls
         self.rand_generator = Random()
 
     @property
@@ -36,7 +43,12 @@ class Fighter(BaseComponent):
 
     @property
     def defense(self) -> int:
-        return self.base_defense + self.defense_bonus
+        if self.parent.equipment.something_is_equipped():
+            equipment_defense = self.parent.equipment.defense_bonus
+            bonus = self.defense_bonus
+            return equipment_defense + bonus
+        else:
+            return self.defense_bonus
 
     @property
     def power(self) -> int:
@@ -53,10 +65,7 @@ class Fighter(BaseComponent):
 
     @property
     def defense_bonus(self) -> int:
-        if self.parent.equipment:
-            return self.parent.equipment.defense_bonus
-        else:
-            return 0
+        return (self.agility - 10) // 2
 
     @property
     def power_bonus(self) -> int:
