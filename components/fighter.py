@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from random import Random
 from typing import TYPE_CHECKING
 
 import colors
@@ -12,12 +13,16 @@ if TYPE_CHECKING:
 
 class Fighter(BaseComponent):
     parent: Actor
+    rand_generator: Random
 
-    def __init__(self, hp: int, base_defense: int, base_power: int):
+    def __init__(self, hp: int, base_defense: int, min_base_power: int, max_base_power: int, strength: int):
         self.max_hp = hp
         self._hp = hp
         self.base_defense = base_defense
-        self.base_power = base_power
+        self.min_base_power = min_base_power
+        self.max_base_power = max_base_power
+        self.strength = strength
+        self.rand_generator = Random()
 
     @property
     def hp(self) -> int:
@@ -35,7 +40,16 @@ class Fighter(BaseComponent):
 
     @property
     def power(self) -> int:
-        return self.base_power + self.power_bonus
+        if self.parent.equipment.something_is_equipped():
+            # Return the power of the equipment plus the fighter's inherent power
+            weapon_power = self.parent.equipment.power_bonus
+            bonus = self.power_bonus
+            return weapon_power + bonus
+        else:
+            # Return the power of the fighter's fists plus fighter's inherent power
+            fist_power = self.rand_generator.randint(self.min_base_power, self.max_base_power)
+            bonus = self.power_bonus
+            return fist_power + bonus
 
     @property
     def defense_bonus(self) -> int:
@@ -46,10 +60,7 @@ class Fighter(BaseComponent):
 
     @property
     def power_bonus(self) -> int:
-        if self.parent.equipment:
-            return self.parent.equipment.power_bonus
-        else:
-            return 0
+        return (self.strength - 10) // 2
 
     def heal(self, amount: int) -> int:
         if self.hp == self.max_hp:
