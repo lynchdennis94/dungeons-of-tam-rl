@@ -54,7 +54,7 @@ class PrimaryAttributes(BaseComponent):
     def health(self, value: int) -> None:
         self._health = max(0, min(value, self.max_health))
         if self._health == 0 and self.parent.ai:
-            self.pa_die()
+            self.die()
 
     @property
     def magicka(self) -> int:
@@ -72,39 +72,7 @@ class PrimaryAttributes(BaseComponent):
     def fatigue(self, value: int) -> None:
         self._fatigue = max(0, min(value, self.max_fatigue))
 
-
-
-    @property
-    def pa_defense(self) -> int:
-        if self.parent.equipment.something_is_equipped():
-            equipment_defense = self.parent.equipment.defense_bonus
-            bonus = self.pa_defense_bonus
-            return equipment_defense + bonus
-        else:
-            return self.pa_defense_bonus
-
-    @property
-    def pa_power(self) -> int:
-        if self.parent.equipment.something_is_equipped():
-            # Return the power of the equipment plus the fighter's inherent power
-            weapon_power = self.parent.equipment.power_bonus
-            bonus = self.pa_power_bonus
-            return weapon_power + bonus
-        else:
-            # Return the power of the fighter's fists plus fighter's inherent power
-            fist_power = self.rand_generator.randint(self.min_base_power, self.max_base_power)
-            bonus = self.pa_power_bonus
-            return fist_power + bonus
-
-    @property
-    def pa_defense_bonus(self) -> int:
-        return (self.agility - 10) // 2
-
-    @property
-    def pa_power_bonus(self) -> int:
-        return (self.strength - 10) // 2
-
-    def pa_heal(self, amount: int) -> int:
+    def heal(self, amount: int) -> int:
         if self.health == self.max_health:
             return 0
 
@@ -118,9 +86,9 @@ class PrimaryAttributes(BaseComponent):
         return amount_recovered
 
     def pa_take_damage(self, amount: int) -> None:
-        self.health -= amount
+        self.health -= amount  # TODO: Refactor out once magic damage is in
 
-    def pa_die(self) -> None:
+    def die(self) -> None:
         if self.engine.player is self.parent:
             death_message = "You died!"
             self.engine.message_log.add_message(death_message, colors.PLAYER_DIE)

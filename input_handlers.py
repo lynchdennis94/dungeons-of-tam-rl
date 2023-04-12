@@ -195,25 +195,21 @@ class AskUserEventHandler(EventHandler):
 
 
 class CharacterScreenEventHandler(AskUserEventHandler):
-    TITLE = "Character Information"
+    TITLE = "Character Sheet"
 
     def on_render(self, console: tcod.Console) -> None:
         super().on_render(console)
 
-        if self.engine.player.x <= 30:
-            x = 40
-        else:
-            x = 0
+        x = 5
+        y = 5
 
-        y = 0
-
-        width = len(self.TITLE) + 4
+        width = 70
 
         console.draw_frame(
             x=x,
             y=y,
             width=width,
-            height=7,
+            height=15,
             title=self.TITLE,
             clear=True,
             fg=(255, 255, 255),
@@ -221,23 +217,53 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         )
 
         console.print(
-            x=x + 1, y=y + 1, string=f"Level: {self.engine.player.level.current_level}"
+            x=x + 1, y=y + 1,
+            string=f"Name: {self.engine.player.name}"
+        )
+        console.print(
+            x=x + 1, y=y + 2,
+            string=f"Level: {self.engine.player.level.current_level}"
+        )
+        console.print(
+            x=x + 1, y=y + 3,
+            string=f"Health: {self.engine.player.primary_attributes.health} / {self.engine.player.primary_attributes.max_health}"
+        )
+        console.print(
+            x=x + 1, y=y + 4,
+            string=f"Magicka: {self.engine.player.primary_attributes.magicka} / {self.engine.player.primary_attributes.max_magicka}"
+        )
+        console.print(
+            x=x + 1, y=y + 5,
+            string=f"Fatigue: {self.engine.player.primary_attributes.fatigue} / {self.engine.player.primary_attributes.max_fatigue}"
+        )
+        console.print(
+            x=x + 1, y=y + 6,
+            string="",
+        )
+        console.print(
+            x=x + 1, y=y + 7,
+            string="Primary Attributes",
         )
 
+        strength_string = "{:<13}".format(f"Strength: {self.engine.player.primary_attributes.strength}")
+        speed_string = "{:<13}".format(f"Speed:    {self.engine.player.primary_attributes.speed}")
+        intelligence_string = "{:<17}".format(f"Intelligence: {self.engine.player.primary_attributes.intelligence}")
+        endurance_string = "{:<17}".format(f"Endurance:    {self.engine.player.primary_attributes.endurance}")
+        personality_string = "{:<16}".format(f"Personality: {self.engine.player.primary_attributes.personality}")
+        willpower_string = "{:<16}".format(f"Willpower:   {self.engine.player.primary_attributes.willpower}")
+        agility_string = "{:<12}".format(f"Agility: {self.engine.player.primary_attributes.agility}")
+        luck_string = "{:<12}".format(f"Luck:    {self.engine.player.primary_attributes.luck}")
         console.print(
-            x=x + 1, y=y + 2, string=f"XP: {self.engine.player.level.current_xp}"
+            x=x + 1, y=y + 8,
+            string=f"{strength_string} {intelligence_string} {personality_string} {agility_string}"
         )
-
         console.print(
-            x=x + 1, y=y + 3, string=f"XP for next level: {self.engine.player.level.experience_to_next_level}"
+            x=x + 1, y=y + 9,
+            string=f"{speed_string} {endurance_string} {willpower_string} {luck_string}"
         )
-
         console.print(
-            x=x + 1, y=y + 4, string=f"Strength: {self.engine.player.primary_attributes.strength}"
-        )
-
-        console.print(
-            x=x + 1, y=y + 5, string=f"Agility: {self.engine.player.primary_attributes.agility}"
+            x=x + 1, y=y + 10,
+            string=f""
         )
 
 

@@ -46,7 +46,7 @@ class HealingConsumable(Consumable):
 
     def activate(self, action: actions.ItemAction) -> None:
         consumer = action.entity
-        amount_recovered = consumer.primary_attributes.pa_heal(self.amount)
+        amount_recovered = consumer.primary_attributes.heal(self.amount)
 
         if amount_recovered > 0:
             self.engine.message_log.add_message(

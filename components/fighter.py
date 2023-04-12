@@ -45,7 +45,7 @@ class Fighter(BaseComponent):
             condition_modifier = 1 # TODO: Add in weapon conditioning
             critical_hit_modifier = 1  # TODO: Add in critical hit logic
         else:
-            skill = self.parent.skills.hand_to_hand
+            skill = self.parent.skills.hand_to_hand  # TODO: Add in fatigue damage
             strength_modifier = 0.075
             condition_modifier = 1  # Always in 'perfect' condition
             critical_hit_modifier = 1  # TODO: Add in critical hit logic
