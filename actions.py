@@ -102,7 +102,8 @@ class ActionWithDirection(Action):
 
 class MeleeAction(ActionWithDirection):
     def perform(self) -> None:
-        target = self.target_actor
+        print(f"{self.entity.name} would attack ... if they could!")
+        '''target = self.target_actor
         if not target:
             raise exceptions.Impossible("Nothing to attack")
 
@@ -115,9 +116,9 @@ class MeleeAction(ActionWithDirection):
             attack_color = colors.ENEMY_ATTACK
         if damage > 0:
             self.engine.message_log.add_message(f"{attack_desc} for {damage} hit points.", attack_color)
-            target.fighter.hp -= damage
+            target.fighter.health -= damage
         else:
-            self.engine.message_log.add_message(f"{attack_desc} but does no damage.", attack_color)
+            self.engine.message_log.add_message(f"{attack_desc} but does no damage.", attack_color)'''
 
 
 class MovementAction(ActionWithDirection):

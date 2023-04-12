@@ -293,7 +293,7 @@ class LevelUpEventHandler(AskUserEventHandler):
 
         match index:
             case 0:
-                player.level.increase_max_hp()
+                player.level.increase_max_health()
             case 1:
                 player.level.increase_power()
             case 2:

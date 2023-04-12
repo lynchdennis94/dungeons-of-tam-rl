@@ -15,31 +15,67 @@ class Fighter(BaseComponent):
     parent: Actor
     rand_generator: Random
 
-    def __init__(self, hp: int, agility: int, min_base_power: int, max_base_power: int, strength: int):
-        # Health attributes
-        self.max_hp = hp
-        self._hp = hp
+    def __init__(
+            self,
+            strength: int,
+            intelligence: int,
+            willpower: int,
+            agility: int,
+            speed: int,
+            endurance: int,
+            personality: int,
+            luck: int):
 
-        # Unarmed power
-        self.min_base_power = min_base_power
-        self.max_base_power = max_base_power
-
-        # Player Attributes
+        # Primary attributes
         self.strength = strength
+        self.intelligence = intelligence
+        self.willpower = willpower
         self.agility = agility
+        self.speed = speed
+        self.endurance = endurance
+        self.personality = personality
+        self.luck = luck
+
+        # Derived Attributes
+        self.max_health = (strength + endurance) // 2
+        self._health = self.max_health
+        self.max_magicka = intelligence # TODO: Add racial modifiers and birthsign modifiers
+        self._magicka = self.max_magicka
+        self.max_fatigue = strength + willpower + agility + endurance
+        self._fatigue = self.max_fatigue
 
         # Rand generator to generate rolls
         self.rand_generator = Random()
 
     @property
-    def hp(self) -> int:
-        return self._hp
+    def health(self) -> int:
+        return self._health
 
-    @hp.setter
-    def hp(self, value: int) -> None:
-        self._hp = max(0, min(value, self.max_hp))
-        if self._hp == 0 and self.parent.ai:
+    @health.setter
+    def health(self, value: int) -> None:
+        self._health = max(0, min(value, self.max_health))
+        if self._health == 0 and self.parent.ai:
             self.die()
+
+    @property
+    def magicka(self) -> int:
+        return self._magicka
+
+    @magicka.setter
+    def magicka(self, value: int) -> None:
+        self._magicka = max(0, min(value, self.max_magicka))
+
+    @property
+    def fatigue(self) -> int:
+        return self._fatigue
+
+    @fatigue.setter
+    def fatigue(self, value: int) -> None:
+        self._fatigue = max(0, min(value, self.max_fatigue))
+
+    @property
+    def hit_rate(self) -> int:
+        pass
 
     @property
     def defense(self) -> int:
@@ -72,20 +108,20 @@ class Fighter(BaseComponent):
         return (self.strength - 10) // 2
 
     def heal(self, amount: int) -> int:
-        if self.hp == self.max_hp:
+        if self.health == self.max_health:
             return 0
 
-        new_hp_value = self.hp + amount
+        new_health_value = self.health + amount
 
-        if new_hp_value > self.max_hp:
-            new_hp_value = self.max_hp
+        if new_health_value > self.max_health:
+            new_health_value = self.max_health
 
-        amount_recovered = new_hp_value - self.hp
-        self.hp = new_hp_value
+        amount_recovered = new_health_value - self.health
+        self.health = new_health_value
         return amount_recovered
 
     def take_damage(self, amount: int) -> None:
-        self.hp -= amount
+        self.health -= amount
 
     def die(self) -> None:
         if self.engine.player is self.parent:

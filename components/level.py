@@ -48,9 +48,9 @@ class Level(BaseComponent):
         self.current_xp -= self.experience_to_next_level
         self.current_level += 1
 
-    def increase_max_hp(self, amount:  int = 20) -> None:
-        self.parent.fighter.max_hp += amount
-        self.parent.fighter.hp += amount
+    def increase_max_health(self, amount:  int = 20) -> None:
+        self.parent.fighter.max_health += amount
+        self.parent.fighter.health += amount
 
         self.engine.message_log.add_message("Your health improves!")
 
