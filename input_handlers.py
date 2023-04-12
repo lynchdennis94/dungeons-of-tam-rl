@@ -233,11 +233,11 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         )
 
         console.print(
-            x=x + 1, y=y + 4, string=f"Strength: {self.engine.player.fighter.strength}"
+            x=x + 1, y=y + 4, string=f"Strength: {self.engine.player.primary_attributes.strength}"
         )
 
         console.print(
-            x=x + 1, y=y + 5, string=f"Agility: {self.engine.player.fighter.agility}"
+            x=x + 1, y=y + 5, string=f"Agility: {self.engine.player.primary_attributes.agility}"
         )
 
 
@@ -269,21 +269,21 @@ class LevelUpEventHandler(AskUserEventHandler):
         console.print(
             x=x + 1,
             y=4,
-            string=f"a) Constitution (+20 HP, from {self.engine.player.fighter.max_hp})"
+            string=f"a) Constitution (+20 HP, from {self.engine.player.primary_attributes.max_hp})"
         )
 
         console.print(
             x=x + 1,
             y=5,
-            string=f"b) Strength:{self.engine.player.fighter.strength + 1} "
-                   f"(+{(self.engine.player.fighter.strength + 1 - 10) // 2} to attack)"
+            string=f"b) Strength:{self.engine.player.primary_attributes.strength + 1} "
+                   f"(+{(self.engine.player.primary_attributes.strength + 1 - 10) // 2} to attack)"
         )
 
         console.print(
             x=x + 1,
             y=6,
-            string=f"c) Agility:{self.engine.player.fighter.agility + 1} "
-                   f"(+{(self.engine.player.fighter.agility + 1 - 10) // 2} to defense)"
+            string=f"c) Agility:{self.engine.player.primary_attributes.agility + 1} "
+                   f"(+{(self.engine.player.primary_attributes.agility + 1 - 10) // 2} to defense)"
         )
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:

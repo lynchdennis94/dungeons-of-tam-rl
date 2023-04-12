@@ -13,6 +13,8 @@ if TYPE_CHECKING:
     from components.ai import BaseAI
     from components.consumable import Consumable
     from components.fighter import Fighter
+    from components.primary_attributes import PrimaryAttributes
+    from components.skills import Skills
     from components.inventory import Inventory
     from game_map import GameMap
 
@@ -89,8 +91,10 @@ class Actor(Entity):
             eyesight_radius: int = 0,
             name: str = "<Unnamed>",
             ai_cls: Type[BaseAI],
-            equipment: Equipment,
             fighter: Fighter,
+            equipment: Equipment,
+            primary_attributes: PrimaryAttributes,
+            skills: Skills,
             inventory: Inventory,
             level: Level
     ):
@@ -110,6 +114,10 @@ class Actor(Entity):
         self.equipment.parent = self
         self.fighter = fighter
         self.fighter.parent = self
+        self.primary_attributes = primary_attributes
+        self.primary_attributes.parent = self
+        self.skills = skills
+        self.skills.parent = self
 
         self.inventory = inventory
         self.inventory.parent = self

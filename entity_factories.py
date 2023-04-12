@@ -2,8 +2,10 @@ from components.ai import HostileEnemy
 from components import consumable, equippable
 from components.equipment import Equipment
 from components.fighter import Fighter
+from components.primary_attributes import PrimaryAttributes
 from components.inventory import Inventory
 from components.level import Level
+from components.skills import Skills
 from entity import Actor, Item
 
 player = Actor(
@@ -13,7 +15,8 @@ player = Actor(
     name="Player",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(
+    fighter=Fighter(),
+    primary_attributes=PrimaryAttributes(
         strength=50,
         intelligence=50,
         willpower=50,
@@ -22,6 +25,34 @@ player = Actor(
         endurance=50,
         personality=50,
         luck=50),
+    skills=Skills(
+        heavy_armor=50,
+        medium_armor=50,
+        spear=50,
+        acrobatics=50,
+        armorer=50,
+        axe=50,
+        blunt_weapon=50,
+        long_blade=50,
+        block=50,
+        light_armor=50,
+        marksman=50,
+        sneak=50,
+        athletics=50,
+        hand_to_hand=100,
+        short_blade=50,
+        unarmored=50,
+        illusion=50,
+        mercantile=50,
+        speechcraft=50,
+        alchemy=50,
+        conjuration=50,
+        enchant=50,
+        security=50,
+        alteration=50,
+        destruction=50,
+        mysticism=50,
+        restoration=50),
     inventory=Inventory(capacity=26),
     level=Level(level_up_base=200)
 )
@@ -33,7 +64,8 @@ orc = Actor(
     name="Orc",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(
+    fighter=Fighter(),
+    primary_attributes=PrimaryAttributes(
         strength=50,
         intelligence=50,
         willpower=50,
@@ -42,6 +74,34 @@ orc = Actor(
         endurance=50,
         personality=50,
         luck=50),
+    skills=Skills(
+        heavy_armor=50,
+        medium_armor=50,
+        spear=50,
+        acrobatics=50,
+        armorer=50,
+        axe=50,
+        blunt_weapon=50,
+        long_blade=50,
+        block=50,
+        light_armor=50,
+        marksman=50,
+        sneak=50,
+        athletics=50,
+        hand_to_hand=50,
+        short_blade=50,
+        unarmored=50,
+        illusion=50,
+        mercantile=50,
+        speechcraft=50,
+        alchemy=50,
+        conjuration=50,
+        enchant=50,
+        security=50,
+        alteration=50,
+        destruction=50,
+        mysticism=50,
+        restoration=50),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=35)
 )
@@ -53,7 +113,8 @@ troll = Actor(
     name="Troll",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(
+    fighter=Fighter(),
+    primary_attributes=PrimaryAttributes(
         strength=50,
         intelligence=50,
         willpower=50,
@@ -62,6 +123,34 @@ troll = Actor(
         endurance=50,
         personality=50,
         luck=50),
+    skills=Skills(
+        heavy_armor=50,
+        medium_armor=50,
+        spear=50,
+        acrobatics=50,
+        armorer=50,
+        axe=50,
+        blunt_weapon=50,
+        long_blade=50,
+        block=50,
+        light_armor=50,
+        marksman=50,
+        sneak=50,
+        athletics=50,
+        hand_to_hand=50,
+        short_blade=50,
+        unarmored=50,
+        illusion=50,
+        mercantile=50,
+        speechcraft=50,
+        alchemy=50,
+        conjuration=50,
+        enchant=50,
+        security=50,
+        alteration=50,
+        destruction=50,
+        mysticism=50,
+        restoration=50),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=100)
 )
