@@ -1,7 +1,8 @@
 from __future__ import annotations
+from enum import auto, Enum
 
 from random import Random
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
 import colors
 from components.base_component import BaseComponent
@@ -11,29 +12,41 @@ if TYPE_CHECKING:
     from entity import Actor
 
 
+class PrimaryAttributesEnum(Enum):
+    STRENGTH = auto()
+    INTELLIGENCE = auto()
+    WILLPOWER = auto()
+    AGILITY = auto()
+    SPEED = auto()
+    ENDURANCE = auto()
+    PERSONALITY = auto()
+    LUCK = auto()
+
+
 class PrimaryAttributes(BaseComponent):
     parent: Actor
+    primary_attribute_map: Dict = {}
 
     def __init__(
             self,
-            strength: int,
-            intelligence: int,
-            willpower: int,
-            agility: int,
-            speed: int,
-            endurance: int,
-            personality: int,
-            luck: int):
+            strength: int = 40,
+            intelligence: int = 40,
+            willpower: int = 40,
+            agility: int = 40,
+            speed: int = 40,
+            endurance: int = 40,
+            personality: int = 40,
+            luck: int = 40):
 
         # Primary attributes
-        self.strength = strength
-        self.intelligence = intelligence
-        self.willpower = willpower
-        self.agility = agility
-        self.speed = speed
-        self.endurance = endurance
-        self.personality = personality
-        self.luck = luck
+        self.primary_attribute_map[PrimaryAttributesEnum.STRENGTH] = ("Strength", strength)
+        self.primary_attribute_map[PrimaryAttributesEnum.INTELLIGENCE] = ("Intelligence", intelligence)
+        self.primary_attribute_map[PrimaryAttributesEnum.WILLPOWER] = ("Willpower", willpower)
+        self.primary_attribute_map[PrimaryAttributesEnum.AGILITY] = ("Agility", agility)
+        self.primary_attribute_map[PrimaryAttributesEnum.SPEED] = ("Speed", speed)
+        self.primary_attribute_map[PrimaryAttributesEnum.ENDURANCE] = ("Endurance", endurance)
+        self.primary_attribute_map[PrimaryAttributesEnum.PERSONALITY] = ("Personality", personality)
+        self.primary_attribute_map[PrimaryAttributesEnum.LUCK] = ("Luck", luck)
 
         # Derived Attributes
         self.max_health = (strength + endurance) // 2

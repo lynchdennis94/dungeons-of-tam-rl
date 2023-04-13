@@ -10,6 +10,7 @@ from actions import Action, BumpAction, DropItemAction, PickupAction, WaitAction
 
 import colors
 import exceptions
+from components.primary_attributes import *
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -245,14 +246,14 @@ class CharacterScreenEventHandler(AskUserEventHandler):
             string="Primary Attributes",
         )
 
-        strength_string = "{:<13}".format(f"Strength: {self.engine.player.primary_attributes.strength}")
-        speed_string = "{:<13}".format(f"Speed:    {self.engine.player.primary_attributes.speed}")
-        intelligence_string = "{:<17}".format(f"Intelligence: {self.engine.player.primary_attributes.intelligence}")
-        endurance_string = "{:<17}".format(f"Endurance:    {self.engine.player.primary_attributes.endurance}")
-        personality_string = "{:<16}".format(f"Personality: {self.engine.player.primary_attributes.personality}")
-        willpower_string = "{:<16}".format(f"Willpower:   {self.engine.player.primary_attributes.willpower}")
-        agility_string = "{:<12}".format(f"Agility: {self.engine.player.primary_attributes.agility}")
-        luck_string = "{:<12}".format(f"Luck:    {self.engine.player.primary_attributes.luck}")
+        strength_string = "{:<13}".format(f"Strength: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.STRENGTH][1]}")
+        speed_string = "{:<13}".format(f"Speed:    {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.SPEED][1]}")
+        intelligence_string = "{:<17}".format(f"Intelligence: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.INTELLIGENCE][1]}")
+        endurance_string = "{:<17}".format(f"Endurance:    {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.ENDURANCE][1]}")
+        personality_string = "{:<16}".format(f"Personality: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.PERSONALITY][1]}")
+        willpower_string = "{:<16}".format(f"Willpower:   {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.WILLPOWER][1]}")
+        agility_string = "{:<12}".format(f"Agility: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.AGILITY][1]}")
+        luck_string = "{:<12}".format(f"Luck:    {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.LUCK][1]}")
         console.print(
             x=x + 1, y=y + 8,
             string=f"{strength_string} {intelligence_string} {personality_string} {agility_string}"
@@ -301,15 +302,15 @@ class LevelUpEventHandler(AskUserEventHandler):
         console.print(
             x=x + 1,
             y=5,
-            string=f"b) Strength:{self.engine.player.primary_attributes.strength + 1} "
-                   f"(+{(self.engine.player.primary_attributes.strength + 1 - 10) // 2} to attack)"
+            string=f"b) Strength:{self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.STRENGTH][1] + 1} "
+                   f"(+{(self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.STRENGTH][1] + 1 - 10) // 2} to attack)"
         )
 
         console.print(
             x=x + 1,
             y=6,
-            string=f"c) Agility:{self.engine.player.primary_attributes.agility + 1} "
-                   f"(+{(self.engine.player.primary_attributes.agility + 1 - 10) // 2} to defense)"
+            string=f"c) Agility:{self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.AGILITY][1] + 1} "
+                   f"(+{(self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.AGILITY][1] + 1 - 10) // 2} to defense)"
         )
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:

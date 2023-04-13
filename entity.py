@@ -4,9 +4,12 @@ import copy
 import math
 from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
 
+from components.birthsign import Birthsign
+from components.character_class import CharacterClass
 from components.equipment import Equipment
 from components.equippable import Equippable
 from components.level import Level
+from components.race import Race
 from render_order import RenderOrder
 
 if TYPE_CHECKING:
@@ -91,6 +94,9 @@ class Actor(Entity):
             eyesight_radius: int = 0,
             name: str = "<Unnamed>",
             ai_cls: Type[BaseAI],
+            race: Race = None,
+            character_class: CharacterClass = None,
+            birthsign: Birthsign = None,
             fighter: Fighter,
             equipment: Equipment,
             primary_attributes: PrimaryAttributes,
@@ -112,6 +118,15 @@ class Actor(Entity):
         self.ai: Optional[BaseAI] = ai_cls(self)
         self.equipment = equipment
         self.equipment.parent = self
+        self.race = race
+        if race:
+            self.race.parent = self
+        self.character_class = character_class
+        if character_class:
+            self.character_class.parent = self
+        self.birthsign = birthsign
+        if birthsign:
+            self.birthsign.parent = self
         self.fighter = fighter
         self.fighter.parent = self
         self.primary_attributes = primary_attributes
