@@ -12,6 +12,7 @@ import tcod
 import colors
 import entity_factories
 import input_handlers
+from components.race import FEMALE_RACES
 from engine import Engine
 from game_map import GameWorld
 
@@ -97,6 +98,6 @@ class MainMenu(input_handlers.BaseEventHandler):
                 traceback.print_exc()
                 return input_handlers.PopupMessage(self, f"Failure\n{exc}")
         elif event.sym == tcod.event.K_n:
-            return input_handlers.MainGameEventHandler(new_game())
+            return input_handlers.NameSelectionEventHandler(new_game())
 
         return None

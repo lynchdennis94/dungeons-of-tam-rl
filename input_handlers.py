@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import copy
 import os
-from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
+from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union, List
 
 import tcod.event
 
@@ -10,6 +11,11 @@ from actions import Action, BumpAction, DropItemAction, PickupAction, WaitAction
 
 import colors
 import exceptions
+from components import character_class, birthsign
+from components.primary_attributes import *
+from components.race import MALE_RACES, FEMALE_RACES
+from components.skills import SkillEnum
+from gender_types import GenderType
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -194,26 +200,169 @@ class AskUserEventHandler(EventHandler):
         return MainGameEventHandler(self.engine)
 
 
+def _format_skill_table_line(skill_map: Dict,
+                             major_skill_list: List[SkillEnum],
+                             minor_skill_list: List[SkillEnum],
+                             misc_skill_list: List[SkillEnum],
+                             current_index: int):
+
+    if current_index < len(major_skill_list):
+        major_skill_name, major_skill_value = skill_map[major_skill_list[current_index]]
+        major_skill_line = " |" + "{:<18}".format(major_skill_name) + "{:<3}".format(major_skill_value)
+    else:
+        major_skill_line = " |" + "{:<21}".format(" ")
+
+    if current_index < len(minor_skill_list):
+        minor_skill_name, minor_skill_value = skill_map[minor_skill_list[current_index]]
+        minor_skill_line = "|" + "{:<18}".format(minor_skill_name) + "{:<3}".format(minor_skill_value)
+    else:
+        minor_skill_line = "|" + "{:<21}".format(" ")
+
+    if current_index < len(misc_skill_list):
+        misc_skill_name, misc_skill_value = skill_map[misc_skill_list[current_index]]
+        misc_skill_line = "|" + "{:<17}".format(misc_skill_name) + "{:<3}".format(misc_skill_value) + "|"
+    else:
+        misc_skill_line = "|" + "{:<20}".format(" ") + "|"
+
+    return major_skill_line + minor_skill_line + misc_skill_line
+
+
 class CharacterScreenEventHandler(AskUserEventHandler):
-    TITLE = "Character Information"
+    TITLE = "Character Sheet"
 
     def on_render(self, console: tcod.Console) -> None:
         super().on_render(console)
 
-        if self.engine.player.x <= 30:
-            x = 40
-        else:
-            x = 0
+        x = 5
+        y = 5
 
-        y = 0
+        width = 70
 
-        width = len(self.TITLE) + 4
+        strength_string = "{:<13}".format(
+            f"Strength: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.STRENGTH][1]}")
+        speed_string = "{:<13}".format(
+            f"Speed:    {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.SPEED][1]}")
+        intelligence_string = "{:<17}".format(
+            f"Intelligence: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.INTELLIGENCE][1]}")
+        endurance_string = "{:<17}".format(
+            f"Endurance:    {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.ENDURANCE][1]}")
+        personality_string = "{:<16}".format(
+            f"Personality: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.PERSONALITY][1]}")
+        willpower_string = "{:<16}".format(
+            f"Willpower:   {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.WILLPOWER][1]}")
+        agility_string = "{:<12}".format(
+            f"Agility: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.AGILITY][1]}")
+        luck_string = "{:<12}".format(
+            f"Luck:    {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.LUCK][1]}")
+
+        major_skill_list = self.engine.player.character_class.major_skills_list
+        minor_skill_list = self.engine.player.character_class.minor_skills_list
+        misc_skill_list = self.engine.player.character_class.misc_skills_list
+        skill_map = self.engine.player.skills.skill_map
+
+        items_to_print = [
+            "",
+            f"Name: {self.engine.player.name}",
+            f"Gender: {self.engine.player.gender.name.lower().capitalize()}",
+            f"Race: {self.engine.player.race.name}",
+            f"Class: {self.engine.player.character_class.name}",
+            "",
+            f"Level: {self.engine.player.level.current_level}",
+            f"Health: {self.engine.player.primary_attributes.health} / {self.engine.player.primary_attributes.max_health}",
+            f"Magicka: {self.engine.player.primary_attributes.magicka} / {self.engine.player.primary_attributes.max_magicka}",
+            f"Fatigue: {self.engine.player.primary_attributes.fatigue} / {self.engine.player.primary_attributes.max_fatigue}",
+            "",
+            "Attributes",
+            f"{strength_string} {intelligence_string} {personality_string} {agility_string}",
+            f"{speed_string} {endurance_string} {willpower_string} {luck_string}",
+            "",
+            " ================================================================== ",
+            "{:<23}".format(" |Major Skills") + "{:<22}".format("|Minor Skills") + "{:<21}".format("|Misc Skills") + "|",
+            " ================================================================== "
+        ]
+
+        for i in range(max(len(minor_skill_list), len(major_skill_list), len(misc_skill_list))):
+            items_to_print.append(_format_skill_table_line(
+                skill_map=skill_map,
+                major_skill_list=major_skill_list,
+                minor_skill_list=minor_skill_list,
+                misc_skill_list=misc_skill_list,
+                current_index=i))
+
+        items_to_print.append(" ================================================================== ")
+        items_to_print.append("")
 
         console.draw_frame(
             x=x,
             y=y,
             width=width,
-            height=7,
+            height=len(items_to_print) + 1,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
+        )
+
+        for y_index, item_to_print in enumerate(items_to_print):
+            console.print(
+                x=x + 1,
+                y=y + y_index,
+                string=item_to_print
+            )
+
+
+class CharacterCreationEventHandler(AskUserEventHandler):
+    TITLE = "Create a Character"
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        return None
+
+    def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Optional[ActionOrHandler]:
+        return None
+
+
+class NameSelectionEventHandler(CharacterCreationEventHandler):
+
+    def __init__(self, engine: Engine):
+        super().__init__(engine)
+        self.name = ""
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        if event.sym in (tcod.event.K_RETURN, tcod.event.K_KP_ENTER):
+            self.engine.player.name = self.name
+            return GenderSelectionEventHandler(self.engine)
+        elif event.sym in (tcod.event.K_DELETE, tcod.event.K_BACKSPACE):
+            self.name = self.name[:-1]
+        else:
+            key = event.sym
+            mod = event.mod
+
+            if tcod.event.K_a <= key <= tcod.event.K_z:
+                char_to_add = key
+                if mod & (tcod.event.KMOD_LSHIFT | tcod.event.KMOD_RSHIFT):
+                    print("TRUE")
+                    char_to_add -= 32
+
+                if len(self.name) < 30:
+                    self.name += chr(char_to_add)
+
+        return None
+
+    def on_render(self, console: tcod.Console) -> None:
+        x = 5
+        y = 5
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f""
+        )
+
+        width = 70
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=5,
             title=self.TITLE,
             clear=True,
             fg=(255, 255, 255),
@@ -221,24 +370,298 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         )
 
         console.print(
-            x=x + 1, y=y + 1, string=f"Level: {self.engine.player.level.current_level}"
+            x=x + 1, y=y + 1,
+            string=f"Enter your name:"
         )
 
         console.print(
-            x=x + 1, y=y + 2, string=f"XP: {self.engine.player.level.current_xp}"
+            x=x + 1, y=y + 2,
+            string=f""
         )
 
         console.print(
-            x=x + 1, y=y + 3, string=f"XP for next level: {self.engine.player.level.experience_to_next_level}"
+            x=x + 1, y=y + 3,
+            string=f"{self.name}"
+        )
+
+
+class GenderSelectionEventHandler(CharacterCreationEventHandler):
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        match event.sym:
+            case tcod.event.K_m:
+                self.engine.player.gender = GenderType.MALE
+            case tcod.event.K_f:
+                self.engine.player.gender = GenderType.FEMALE
+            case _:
+                return None
+
+        return RaceSelectionEventHandler(self.engine)
+
+    def on_render(self, console: tcod.Console) -> None:
+        x = 5
+        y = 5
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f""
+        )
+
+        width = 70
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=5,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
         )
 
         console.print(
-            x=x + 1, y=y + 4, string=f"Strength: {self.engine.player.fighter.strength}"
+            x=x + 1, y=y + 1,
+            string=f"Choose your Gender:"
         )
 
         console.print(
-            x=x + 1, y=y + 5, string=f"Agility: {self.engine.player.fighter.agility}"
+            x=x + 1, y=y + 2,
+            string=f"[M] Male"
         )
+
+        console.print(
+            x=x + 1, y=y + 3,
+            string=f"[F] Female"
+        )
+
+
+class RaceSelectionEventHandler(CharacterCreationEventHandler):
+    def __init__(self, engine: Engine):
+        super().__init__(engine)
+
+        self.selection_list = []
+        race_list = MALE_RACES if self.engine.player.gender == GenderType.MALE else FEMALE_RACES
+
+        for i, race in enumerate(race_list):
+            selection_character = chr(ord('a') + i)
+            self.selection_list.append((selection_character, race))
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        index = event.sym - tcod.event.K_a
+        if 0 <= index <= len(self.selection_list):
+            self.engine.player.race = self.selection_list[index][1]
+            self.engine.player.race.parent = self.engine.player
+            return ClassSelectionEventHandler(self.engine)
+
+        return None
+
+    def on_render(self, console: tcod.Console) -> None:
+        x = 5
+        y = 5
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f""
+        )
+
+        width = 70
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=13,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
+        )
+
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f"Choose your Race:"
+        )
+
+        y_index = y + 2
+        for selection_character, race in self.selection_list:
+            console.print(
+                x=x + 1, y=y_index,
+                string=f"[{selection_character}] {race.name}"
+            )
+
+            y_index += 1
+
+
+class ClassSelectionEventHandler(CharacterCreationEventHandler):
+    def __init__(self, engine: Engine):
+        super().__init__(engine)
+
+        self.selection_list = []
+        class_list = character_class.CHARACTER_CLASS_LIST
+        for i, class_choice in enumerate(class_list):
+            selection_character = chr(ord('a') + i)
+            self.selection_list.append((selection_character, class_choice))
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        index = event.sym - tcod.event.K_a
+        if 0 <= index <= len(self.selection_list):
+            self.engine.player.character_class = self.selection_list[index][1]
+            self.engine.player.character_class.parent = self.engine.player
+            return BirthSignSelectionEventHandler(self.engine)
+
+        return None
+
+    def on_render(self, console: tcod.Console) -> None:
+        x = 5
+        y = 5
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f""
+        )
+
+        width = 70
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=24,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
+        )
+
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f"Choose your Class:"
+        )
+
+        y_index = y + 2
+        for selection_character, race in self.selection_list:
+            console.print(
+                x=x + 1, y=y_index,
+                string=f"[{selection_character}] {race.name}"
+            )
+
+            y_index += 1
+
+
+class BirthSignSelectionEventHandler(CharacterCreationEventHandler):
+    def __init__(self, engine: Engine):
+        super().__init__(engine)
+
+        self.selection_list = []
+        birthsign_list = birthsign.BIRTHSIGN_LIST
+        for i, birthsign_choice in enumerate(birthsign_list):
+            selection_character = chr(ord('a') + i)
+            self.selection_list.append((selection_character, birthsign_choice))
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        index = event.sym - tcod.event.K_a
+        if 0 <= index <= len(self.selection_list):
+            self.engine.player.birthsign = self.selection_list[index][1]
+            self.engine.player.birthsign.parent = self.engine.player
+            return CharacterConfirmationEventHandler(self.engine)
+
+        return None
+
+    def on_render(self, console: tcod.Console) -> None:
+        x = 5
+        y = 5
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f""
+        )
+
+        width = 70
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=16,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
+        )
+
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f"Choose your Birthsign:"
+        )
+
+        y_index = y + 2
+        for selection_character, birthsign_element in self.selection_list:
+            console.print(
+                x=x + 1, y=y_index,
+                string=f"[{selection_character}] {birthsign_element.name}"
+            )
+
+            y_index += 1
+
+
+class CharacterConfirmationEventHandler(CharacterCreationEventHandler):
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        match event.sym:
+            case tcod.event.K_y:
+                # Finalize the character creation and start the game
+                self.engine.player.primary_attributes.primary_attribute_map = self.engine.player.race.base_primary_attributes.primary_attribute_map
+                self.engine.player.character_class.set_skill_level_factor_weights()
+                self.engine.player.character_class.set_attribute_bonuses()
+                self.engine.player.character_class.set_skill_bonuses()
+                self.engine.player.race.set_skill_bonuses()
+                self.engine.player.birthsign.apply_abilities()
+                self.engine.player.birthsign.add_spell()
+                self.engine.player.birthsign.add_power()
+
+                return MainGameEventHandler(self.engine)
+            case tcod.event.K_n:
+                # Return to start of character creation screen
+                return GenderSelectionEventHandler(self.engine)
+            case _:
+                return None
+
+    def on_render(self, console: tcod.Console) -> None:
+        x = 5
+        y = 5
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f""
+        )
+
+        width = 70
+
+        items_to_print = [
+            f"Your Character:",
+            f"",
+            f"Name: {self.engine.player.name}",
+            f"Gender: {self.engine.player.gender.name.lower().capitalize()}",
+            f"Race: {self.engine.player.race.name}",
+            f"Class: {self.engine.player.character_class.name}",
+            f"Birthsign: {self.engine.player.birthsign.name}",
+            f"",
+            f"[y] Yes",
+            f"[n] No"
+        ]
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=12,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
+        )
+
+        for y_index, item_to_print in enumerate(items_to_print):
+            console.print(
+                x=x + 1,
+                y=y + y_index,
+                string=item_to_print
+            )
 
 
 class LevelUpEventHandler(AskUserEventHandler):
@@ -269,21 +692,21 @@ class LevelUpEventHandler(AskUserEventHandler):
         console.print(
             x=x + 1,
             y=4,
-            string=f"a) Constitution (+20 HP, from {self.engine.player.fighter.max_hp})"
+            string=f"a) Constitution (+20 HP, from {self.engine.player.primary_attributes.max_hp})"
         )
 
         console.print(
             x=x + 1,
             y=5,
-            string=f"b) Strength:{self.engine.player.fighter.strength + 1} "
-                   f"(+{(self.engine.player.fighter.strength + 1 - 10) // 2} to attack)"
+            string=f"b) Strength:{self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.STRENGTH][1] + 1} "
+                   f"(+{(self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.STRENGTH][1] + 1 - 10) // 2} to attack)"
         )
 
         console.print(
             x=x + 1,
             y=6,
-            string=f"c) Agility:{self.engine.player.fighter.agility + 1} "
-                   f"(+{(self.engine.player.fighter.agility + 1 - 10) // 2} to defense)"
+            string=f"c) Agility:{self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.AGILITY][1] + 1} "
+                   f"(+{(self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.AGILITY][1] + 1 - 10) // 2} to defense)"
         )
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
@@ -293,7 +716,7 @@ class LevelUpEventHandler(AskUserEventHandler):
 
         match index:
             case 0:
-                player.level.increase_max_hp()
+                player.level.increase_max_health()
             case 1:
                 player.level.increase_power()
             case 2:

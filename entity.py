@@ -4,15 +4,21 @@ import copy
 import math
 from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
 
+from components.birthsign import Birthsign
+from components.character_class import CharacterClass
 from components.equipment import Equipment
 from components.equippable import Equippable
 from components.level import Level
+from components.race import Race
+from gender_types import GenderType
 from render_order import RenderOrder
 
 if TYPE_CHECKING:
     from components.ai import BaseAI
     from components.consumable import Consumable
     from components.fighter import Fighter
+    from components.primary_attributes import PrimaryAttributes
+    from components.skills import Skills
     from components.inventory import Inventory
     from game_map import GameMap
 
@@ -89,8 +95,14 @@ class Actor(Entity):
             eyesight_radius: int = 0,
             name: str = "<Unnamed>",
             ai_cls: Type[BaseAI],
-            equipment: Equipment,
+            gender: GenderType = None,
+            race: Race = None,
+            character_class: CharacterClass = None,
+            birthsign: Birthsign = None,
             fighter: Fighter,
+            equipment: Equipment,
+            primary_attributes: PrimaryAttributes,
+            skills: Skills,
             inventory: Inventory,
             level: Level
     ):
@@ -108,8 +120,22 @@ class Actor(Entity):
         self.ai: Optional[BaseAI] = ai_cls(self)
         self.equipment = equipment
         self.equipment.parent = self
+        self.gender = gender
+        self.race = race
+        if race:
+            self.race.parent = self
+        self.character_class = character_class
+        if character_class:
+            self.character_class.parent = self
+        self.birthsign = birthsign
+        if birthsign:
+            self.birthsign.parent = self
         self.fighter = fighter
         self.fighter.parent = self
+        self.primary_attributes = primary_attributes
+        self.primary_attributes.parent = self
+        self.skills = skills
+        self.skills.parent = self
 
         self.inventory = inventory
         self.inventory.parent = self

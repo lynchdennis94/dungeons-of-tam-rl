@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from random import Random
 from typing import Optional, Tuple, TYPE_CHECKING
 
 import colors
@@ -14,6 +15,7 @@ class Action:
     def __init__(self, entity: Actor) -> None:
         super().__init__()
         self.entity = entity
+        self.rand_generator = Random()
 
     @property
     def engine(self) -> Engine:
@@ -102,22 +104,28 @@ class ActionWithDirection(Action):
 
 class MeleeAction(ActionWithDirection):
     def perform(self) -> None:
+        print(f"{self.entity.name} would attack ... if they could!")
         target = self.target_actor
         if not target:
             raise exceptions.Impossible("Nothing to attack")
 
-        damage = self.entity.fighter.power - target.fighter.defense
-
-        attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
-        if self.entity is self.engine.player:
-            attack_color = colors.PLAYER_ATTACK
+        chance_to_hit = self.entity.fighter.hit_rate() - target.fighter.evasion()
+        attack_role = self.rand_generator.randint(1, 100)
+        if attack_role <= chance_to_hit:
+            # The attack hit, calculate damage
+            damage = self.entity.fighter.weapon_damage(0)  # TODO: Add in target armor rating
+            attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
+            if self.entity is self.engine.player:
+                attack_color = colors.PLAYER_ATTACK
+            else:
+                attack_color = colors.ENEMY_ATTACK
+            if damage > 0:
+                self.engine.message_log.add_message(f"{attack_desc} for {damage} hit points.", attack_color)
+                target.primary_attributes.health -= damage
+            else:
+                self.engine.message_log.add_message(f"{attack_desc} but does no damage.", attack_color)
         else:
-            attack_color = colors.ENEMY_ATTACK
-        if damage > 0:
-            self.engine.message_log.add_message(f"{attack_desc} for {damage} hit points.", attack_color)
-            target.fighter.hp -= damage
-        else:
-            self.engine.message_log.add_message(f"{attack_desc} but does no damage.", attack_color)
+            self.engine.message_log.add_message(f"{target.name} dodged out of the way!", colors.HEALTH_RECOVERED) # TODO: Get a better color
 
 
 class MovementAction(ActionWithDirection):

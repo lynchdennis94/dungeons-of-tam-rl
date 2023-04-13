@@ -2,8 +2,10 @@ from components.ai import HostileEnemy
 from components import consumable, equippable
 from components.equipment import Equipment
 from components.fighter import Fighter
+from components.primary_attributes import PrimaryAttributes
 from components.inventory import Inventory
 from components.level import Level
+from components.skills import Skills
 from entity import Actor, Item
 
 player = Actor(
@@ -13,7 +15,9 @@ player = Actor(
     name="Player",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=30, agility=10, min_base_power=1, max_base_power=6, strength=10),
+    fighter=Fighter(),
+    primary_attributes=PrimaryAttributes(),
+    skills=Skills(),
     inventory=Inventory(capacity=26),
     level=Level(level_up_base=200)
 )
@@ -25,7 +29,9 @@ orc = Actor(
     name="Orc",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=10, agility=10, min_base_power=1, max_base_power=3, strength=10),
+    fighter=Fighter(),
+    primary_attributes=PrimaryAttributes(),
+    skills=Skills(),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=35)
 )
@@ -37,7 +43,9 @@ troll = Actor(
     name="Troll",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=16, agility=6, min_base_power=2, max_base_power=8, strength=14),
+    fighter=Fighter(),
+    primary_attributes=PrimaryAttributes(),
+    skills=Skills(),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=100)
 )
