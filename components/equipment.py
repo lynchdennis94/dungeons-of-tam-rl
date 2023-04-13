@@ -12,39 +12,29 @@ if TYPE_CHECKING:
 
 class Equipment(BaseComponent):
     parent: Actor
-    rand_generator: Random
 
-    def __init__(self, weapon: Optional[Item] = None, armor: Optional[Item] = None):
+    def __init__(self,
+                 weapon: Optional[Item] = None,
+                 shield: Optional[Item] = None,
+                 helmet: Optional[Item] = None,
+                 cuirass: Optional[Item] = None,
+                 left_shoulder: Optional[Item] = None,
+                 left_hand_armor: Optional[Item] = None,
+                 right_shoulder: Optional[Item] = None,
+                 right_hand_armor: Optional[Item] = None,
+                 greaves: Optional[Item] = None,
+                 boots: Optional[Item] = None,):
         self.weapon = weapon
-        self.armor = armor
+        self.shield = shield
+        self.helmet = helmet
+        self.cuirass = cuirass
+        self.left_shoulder = left_shoulder
+        self.left_hand_armor = left_hand_armor
+        self.right_shoulder = right_shoulder
+        self.right_hand_armor = right_hand_armor
+        self.greaves = greaves
+        self.boots = boots
         self.rand_generator = Random()
-
-    @property
-    def defense_bonus(self) -> int:
-        bonus = 0
-
-        if self.weapon is not None and self.weapon.equippable is not None:
-            bonus += self.weapon.equippable.defense_bonus
-
-        if self.armor is not None and self.armor.equippable is not None:
-            bonus += self.armor.equippable.defense_bonus
-
-        return bonus
-
-    @property
-    def power_bonus(self) -> int:
-        bonus = 0
-
-        if self.weapon is not None and self.weapon.equippable is not None:
-            bonus += self.rand_generator.randint(self.weapon.equippable.min_power, self.weapon.equippable.max_power)
-
-        if self.armor is not None and self.armor.equippable is not None:
-            bonus += self.rand_generator.randint(self.armor.equippable.min_power, self.armor.equippable.max_power)
-
-        return bonus
-
-    def something_is_equipped(self) -> bool:
-        return self.weapon is not None or self.armor is not None
 
     def item_is_equipped(self, item: Item) -> bool:
         return self.weapon == item or self.armor == item

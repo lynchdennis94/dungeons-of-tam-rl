@@ -104,16 +104,20 @@ class ActionWithDirection(Action):
 
 class MeleeAction(ActionWithDirection):
     def perform(self) -> None:
-        print(f"{self.entity.name} would attack ... if they could!")
         target = self.target_actor
         if not target:
             raise exceptions.Impossible("Nothing to attack")
 
         chance_to_hit = self.entity.fighter.hit_rate() - target.fighter.evasion()
+        print(f"Chance to hit: {chance_to_hit}")
         attack_role = self.rand_generator.randint(1, 100)
+        print(f"Rolled {attack_role}")
         if attack_role <= chance_to_hit:
             # The attack hit, calculate damage
-            damage = self.entity.fighter.weapon_damage(0)  # TODO: Add in target armor rating
+            enemy_armor_rating = target.fighter.armor_rating()
+            print(f"Enemy armor rating: {enemy_armor_rating}")
+            damage = self.entity.fighter.damage(enemy_armor_rating)
+            print(f"Damage: {damage}")
             attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
             if self.entity is self.engine.player:
                 attack_color = colors.PLAYER_ATTACK
