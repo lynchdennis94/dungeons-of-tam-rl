@@ -98,6 +98,6 @@ class MainMenu(input_handlers.BaseEventHandler):
                 traceback.print_exc()
                 return input_handlers.PopupMessage(self, f"Failure\n{exc}")
         elif event.sym == tcod.event.K_n:
-            return input_handlers.GenderSelectionEventHandler(new_game())
+            return input_handlers.NameSelectionEventHandler(new_game())
 
         return None

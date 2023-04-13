@@ -282,6 +282,70 @@ class CharacterCreationEventHandler(AskUserEventHandler):
         return None
 
 
+class NameSelectionEventHandler(CharacterCreationEventHandler):
+
+    def __init__(self, engine: Engine):
+        super().__init__(engine)
+        self.name = ""
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        if event.sym in (tcod.event.K_RETURN, tcod.event.K_KP_ENTER):
+            self.engine.player.name = self.name
+            return GenderSelectionEventHandler(self.engine)
+        elif event.sym in (tcod.event.K_DELETE, tcod.event.K_BACKSPACE):
+            self.name = self.name[:-1]
+        else:
+            key = event.sym
+            mod = event.mod
+
+            if tcod.event.K_a <= key <= tcod.event.K_z:
+                char_to_add = key
+                if mod & (tcod.event.KMOD_LSHIFT | tcod.event.KMOD_RSHIFT):
+                    print("TRUE")
+                    char_to_add -= 32
+
+                if len(self.name) < 30:
+                    self.name += chr(char_to_add)
+
+        return None
+
+    def on_render(self, console: tcod.Console) -> None:
+        x = 5
+        y = 5
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f""
+        )
+
+        width = 70
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=5,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
+        )
+
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f"Enter your name:"
+        )
+
+        console.print(
+            x=x + 1, y=y + 2,
+            string=f""
+        )
+
+        console.print(
+            x=x + 1, y=y + 3,
+            string=f"{self.name}"
+        )
+
+
 class GenderSelectionEventHandler(CharacterCreationEventHandler):
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
@@ -532,7 +596,7 @@ class CharacterConfirmationEventHandler(CharacterCreationEventHandler):
             x=x,
             y=y,
             width=width,
-            height=10,
+            height=12,
             title=self.TITLE,
             clear=True,
             fg=(255, 255, 255),
@@ -546,36 +610,46 @@ class CharacterConfirmationEventHandler(CharacterCreationEventHandler):
 
         console.print(
             x=x + 1, y=y + 2,
-            string=f"Gender: {self.engine.player.gender.name.lower().capitalize()}"
-        )
-
-        console.print(
-            x=x + 1, y=y + 3,
-            string=f"Race: {self.engine.player.race.name}"
-        )
-
-        console.print(
-            x=x + 1, y=y + 4,
-            string=f"Class: {self.engine.player.character_class.name}"
-        )
-
-        console.print(
-            x=x + 1, y=y + 5,
-            string=f"Birthsign: {self.engine.player.birthsign.name}"
-        )
-
-        console.print(
-            x=x + 1, y=y + 6,
             string=f""
         )
 
         console.print(
+            x=x + 1, y=y + 3,
+            string=f"Name: {self.engine.player.name}"
+        )
+
+        console.print(
+            x=x + 1, y=y + 4,
+            string=f"Gender: {self.engine.player.gender.name.lower().capitalize()}"
+        )
+
+        console.print(
+            x=x + 1, y=y + 5,
+            string=f"Race: {self.engine.player.race.name}"
+        )
+
+        console.print(
+            x=x + 1, y=y + 6,
+            string=f"Class: {self.engine.player.character_class.name}"
+        )
+
+        console.print(
             x=x + 1, y=y + 7,
-            string=f"[y] Yes"
+            string=f"Birthsign: {self.engine.player.birthsign.name}"
         )
 
         console.print(
             x=x + 1, y=y + 8,
+            string=f""
+        )
+
+        console.print(
+            x=x + 1, y=y + 9,
+            string=f"[y] Yes"
+        )
+
+        console.print(
+            x=x + 1, y=y + 10,
             string=f"[n] No"
         )
 
