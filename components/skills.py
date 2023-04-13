@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import copy
 from enum import auto, Enum
 
 from typing import TYPE_CHECKING
@@ -39,39 +41,39 @@ class SkillEnum(Enum):
 
 
 COMBAT_SKILLS = [
-    SkillEnum.ARMORER,
-    SkillEnum.ATHLETICS,
-    SkillEnum.AXE,
-    SkillEnum.BLOCK,
-    SkillEnum.BLUNT_WEAPON,
-    SkillEnum.HEAVY_ARMOR,
-    SkillEnum.LONG_BLADE,
-    SkillEnum.MEDIUM_ARMOR,
-    SkillEnum.SPEAR
+    copy.deepcopy(SkillEnum.ARMORER),
+    copy.deepcopy(SkillEnum.ATHLETICS),
+    copy.deepcopy(SkillEnum.AXE),
+    copy.deepcopy(SkillEnum.BLOCK),
+    copy.deepcopy(SkillEnum.BLUNT_WEAPON),
+    copy.deepcopy(SkillEnum.HEAVY_ARMOR),
+    copy.deepcopy(SkillEnum.LONG_BLADE),
+    copy.deepcopy(SkillEnum.MEDIUM_ARMOR),
+    copy.deepcopy(SkillEnum.SPEAR)
 ]
 
 MAGIC_SKILLS = [
-    SkillEnum.ALCHEMY,
-    SkillEnum.ALTERATION,
-    SkillEnum.CONJURATION,
-    SkillEnum.DESTRUCTION,
-    SkillEnum.ENCHANT,
-    SkillEnum.ILLUSION,
-    SkillEnum.MYSTICISM,
-    SkillEnum.RESTORATION,
-    SkillEnum.UNARMORED
+    copy.deepcopy(SkillEnum.ALCHEMY),
+    copy.deepcopy(SkillEnum.ALTERATION),
+    copy.deepcopy(SkillEnum.CONJURATION),
+    copy.deepcopy(SkillEnum.DESTRUCTION),
+    copy.deepcopy(SkillEnum.ENCHANT),
+    copy.deepcopy(SkillEnum.ILLUSION),
+    copy.deepcopy(SkillEnum.MYSTICISM),
+    copy.deepcopy(SkillEnum.RESTORATION),
+    copy.deepcopy(SkillEnum.UNARMORED)
 ]
 
 STEALTH_SKILLS = [
-    SkillEnum.ACROBATICS,
-    SkillEnum.HAND_TO_HAND,
-    SkillEnum.LIGHT_ARMOR,
-    SkillEnum.MARKSMAN,
-    SkillEnum.MERCANTILE,
-    SkillEnum.SECURITY,
-    SkillEnum.SHORT_BLADE,
-    SkillEnum.SNEAK,
-    SkillEnum.SPEECHCRAFT
+    copy.deepcopy(SkillEnum.ACROBATICS),
+    copy.deepcopy(SkillEnum.HAND_TO_HAND),
+    copy.deepcopy(SkillEnum.LIGHT_ARMOR),
+    copy.deepcopy(SkillEnum.MARKSMAN),
+    copy.deepcopy(SkillEnum.MERCANTILE),
+    copy.deepcopy(SkillEnum.SECURITY),
+    copy.deepcopy(SkillEnum.SHORT_BLADE),
+    copy.deepcopy(SkillEnum.SNEAK),
+    copy.deepcopy(SkillEnum.SPEECHCRAFT)
 ]
 
 

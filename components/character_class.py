@@ -24,6 +24,11 @@ class CharacterClass(BaseComponent):
         self.name = name
         self.major_skills_list = major_skills
         self.minor_skills_list = minor_skills
+        self.misc_skills_list = []
+        for skill in SkillEnum:
+            if skill not in major_skills and skill not in minor_skills:
+                self.misc_skills_list.append(skill)
+
         self.specialization_skills_list = specialization_skills
         self.favored_attributes_list = favored_attributes
         self.skill_level_factors = {}
@@ -34,27 +39,33 @@ class CharacterClass(BaseComponent):
             self.skill_level_factors[skill] = 1.25
 
         # Overwrite the major, minor, and specialized skills
-        for skill in self.major_skills_list:
-            self.skill_level_factors[skill] = 0.75
-        for skill in self.specialization_skills_list:
-            self.skill_level_factors[skill] = 0.8
         for skill in self.minor_skills_list:
             self.skill_level_factors[skill] = 1.0
+        for skill in self.specialization_skills_list:
+            self.skill_level_factors[skill] = 0.8
+        for skill in self.major_skills_list:
+            self.skill_level_factors[skill] = 0.75
 
     def set_skill_bonuses(self):
-        # Initialize the parent skills
-        for skill in SkillEnum:
+        # Set misc skills (+5 bonus)
+        for skill in self.misc_skills_list:
             name, val = self.parent.skills.skill_map[skill]
             self.parent.skills.skill_map[skill] = (name, val + 5)
 
-        # Overwrite major and minor skills
+        # Set major skills (+30 bonus)
         for skill in self.major_skills_list:
             name, val = self.parent.skills.skill_map[skill]
             self.parent.skills.skill_map[skill] = (name, val + 30)
 
+        # Set minor skills (+15 bonus)
         for skill in self.minor_skills_list:
             name, val = self.parent.skills.skill_map[skill]
             self.parent.skills.skill_map[skill] = (name, val + 15)
+
+        # Add bonuses for 'specialization' skills
+        for skill in self.specialization_skills_list:
+            name, val = self.parent.skills.skill_map[skill]
+            self.parent.skills.skill_map[skill] = (name, val + 5)
 
     def set_attribute_bonuses(self):
         for attribute in self.favored_attributes_list:

@@ -24,6 +24,12 @@ class Race(BaseComponent):
         self.base_skills = base_skills
         self.magicka_multiplier = magicka_multiplier
 
+    def set_skill_bonuses(self):
+        for skill in self.base_skills.skill_map:
+            _, new_val = self.base_skills.skill_map[skill]
+            name, old_val = self.parent.skills.skill_map[skill]
+            self.parent.skills.skill_map[skill] = (name, old_val + new_val)
+
 
 ARGONIAN_MALE = Race(
     name="Argonian",

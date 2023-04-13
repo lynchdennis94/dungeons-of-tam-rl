@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 import os
-from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
+from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union, List
 
 import tcod.event
 
@@ -14,6 +14,7 @@ import exceptions
 from components import character_class, birthsign
 from components.primary_attributes import *
 from components.race import MALE_RACES, FEMALE_RACES
+from components.skills import SkillEnum
 from gender_types import GenderType
 
 if TYPE_CHECKING:
@@ -199,6 +200,33 @@ class AskUserEventHandler(EventHandler):
         return MainGameEventHandler(self.engine)
 
 
+def _format_skill_table_line(skill_map: Dict,
+                             major_skill_list: List[SkillEnum],
+                             minor_skill_list: List[SkillEnum],
+                             misc_skill_list: List[SkillEnum],
+                             current_index: int):
+
+    if current_index < len(major_skill_list):
+        major_skill_name, major_skill_value = skill_map[major_skill_list[current_index]]
+        major_skill_line = " |" + "{:<18}".format(major_skill_name) + "{:<3}".format(major_skill_value)
+    else:
+        major_skill_line = " |" + "{:<21}".format(" ")
+
+    if current_index < len(minor_skill_list):
+        minor_skill_name, minor_skill_value = skill_map[minor_skill_list[current_index]]
+        minor_skill_line = "|" + "{:<18}".format(minor_skill_name) + "{:<3}".format(minor_skill_value)
+    else:
+        minor_skill_line = "|" + "{:<21}".format(" ")
+
+    if current_index < len(misc_skill_list):
+        misc_skill_name, misc_skill_value = skill_map[misc_skill_list[current_index]]
+        misc_skill_line = "|" + "{:<17}".format(misc_skill_name) + "{:<3}".format(misc_skill_value) + "|"
+    else:
+        misc_skill_line = "|" + "{:<20}".format(" ") + "|"
+
+    return major_skill_line + minor_skill_line + misc_skill_line
+
+
 class CharacterScreenEventHandler(AskUserEventHandler):
     TITLE = "Character Sheet"
 
@@ -210,66 +238,77 @@ class CharacterScreenEventHandler(AskUserEventHandler):
 
         width = 70
 
+        strength_string = "{:<13}".format(
+            f"Strength: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.STRENGTH][1]}")
+        speed_string = "{:<13}".format(
+            f"Speed:    {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.SPEED][1]}")
+        intelligence_string = "{:<17}".format(
+            f"Intelligence: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.INTELLIGENCE][1]}")
+        endurance_string = "{:<17}".format(
+            f"Endurance:    {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.ENDURANCE][1]}")
+        personality_string = "{:<16}".format(
+            f"Personality: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.PERSONALITY][1]}")
+        willpower_string = "{:<16}".format(
+            f"Willpower:   {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.WILLPOWER][1]}")
+        agility_string = "{:<12}".format(
+            f"Agility: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.AGILITY][1]}")
+        luck_string = "{:<12}".format(
+            f"Luck:    {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.LUCK][1]}")
+
+        major_skill_list = self.engine.player.character_class.major_skills_list
+        minor_skill_list = self.engine.player.character_class.minor_skills_list
+        misc_skill_list = self.engine.player.character_class.misc_skills_list
+        skill_map = self.engine.player.skills.skill_map
+
+        items_to_print = [
+            "",
+            f"Name: {self.engine.player.name}",
+            f"Gender: {self.engine.player.gender.name.lower().capitalize()}",
+            f"Race: {self.engine.player.race.name}",
+            f"Class: {self.engine.player.character_class.name}",
+            "",
+            f"Level: {self.engine.player.level.current_level}",
+            f"Health: {self.engine.player.primary_attributes.health} / {self.engine.player.primary_attributes.max_health}",
+            f"Magicka: {self.engine.player.primary_attributes.magicka} / {self.engine.player.primary_attributes.max_magicka}",
+            f"Fatigue: {self.engine.player.primary_attributes.fatigue} / {self.engine.player.primary_attributes.max_fatigue}",
+            "",
+            "Attributes",
+            f"{strength_string} {intelligence_string} {personality_string} {agility_string}",
+            f"{speed_string} {endurance_string} {willpower_string} {luck_string}",
+            "",
+            " ================================================================== ",
+            "{:<23}".format(" |Major Skills") + "{:<22}".format("|Minor Skills") + "{:<21}".format("|Misc Skills") + "|",
+            " ================================================================== "
+        ]
+
+        for i in range(max(len(minor_skill_list), len(major_skill_list), len(misc_skill_list))):
+            items_to_print.append(_format_skill_table_line(
+                skill_map=skill_map,
+                major_skill_list=major_skill_list,
+                minor_skill_list=minor_skill_list,
+                misc_skill_list=misc_skill_list,
+                current_index=i))
+
+        items_to_print.append(" ================================================================== ")
+        items_to_print.append("")
+
         console.draw_frame(
             x=x,
             y=y,
             width=width,
-            height=15,
+            height=len(items_to_print) + 1,
             title=self.TITLE,
             clear=True,
             fg=(255, 255, 255),
             bg=(0, 0, 0)
         )
 
-        console.print(
-            x=x + 1, y=y + 1,
-            string=f"Name: {self.engine.player.name}"
-        )
-        console.print(
-            x=x + 1, y=y + 2,
-            string=f"Level: {self.engine.player.level.current_level}"
-        )
-        console.print(
-            x=x + 1, y=y + 3,
-            string=f"Health: {self.engine.player.primary_attributes.health} / {self.engine.player.primary_attributes.max_health}"
-        )
-        console.print(
-            x=x + 1, y=y + 4,
-            string=f"Magicka: {self.engine.player.primary_attributes.magicka} / {self.engine.player.primary_attributes.max_magicka}"
-        )
-        console.print(
-            x=x + 1, y=y + 5,
-            string=f"Fatigue: {self.engine.player.primary_attributes.fatigue} / {self.engine.player.primary_attributes.max_fatigue}"
-        )
-        console.print(
-            x=x + 1, y=y + 6,
-            string="",
-        )
-        console.print(
-            x=x + 1, y=y + 7,
-            string="Primary Attributes",
-        )
-
-        strength_string = "{:<13}".format(f"Strength: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.STRENGTH][1]}")
-        speed_string = "{:<13}".format(f"Speed:    {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.SPEED][1]}")
-        intelligence_string = "{:<17}".format(f"Intelligence: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.INTELLIGENCE][1]}")
-        endurance_string = "{:<17}".format(f"Endurance:    {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.ENDURANCE][1]}")
-        personality_string = "{:<16}".format(f"Personality: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.PERSONALITY][1]}")
-        willpower_string = "{:<16}".format(f"Willpower:   {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.WILLPOWER][1]}")
-        agility_string = "{:<12}".format(f"Agility: {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.AGILITY][1]}")
-        luck_string = "{:<12}".format(f"Luck:    {self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.LUCK][1]}")
-        console.print(
-            x=x + 1, y=y + 8,
-            string=f"{strength_string} {intelligence_string} {personality_string} {agility_string}"
-        )
-        console.print(
-            x=x + 1, y=y + 9,
-            string=f"{speed_string} {endurance_string} {willpower_string} {luck_string}"
-        )
-        console.print(
-            x=x + 1, y=y + 10,
-            string=f""
-        )
+        for y_index, item_to_print in enumerate(items_to_print):
+            console.print(
+                x=x + 1,
+                y=y + y_index,
+                string=item_to_print
+            )
 
 
 class CharacterCreationEventHandler(AskUserEventHandler):
@@ -571,6 +610,7 @@ class CharacterConfirmationEventHandler(CharacterCreationEventHandler):
                 self.engine.player.character_class.set_skill_level_factor_weights()
                 self.engine.player.character_class.set_attribute_bonuses()
                 self.engine.player.character_class.set_skill_bonuses()
+                self.engine.player.race.set_skill_bonuses()
                 self.engine.player.birthsign.apply_abilities()
                 self.engine.player.birthsign.add_spell()
                 self.engine.player.birthsign.add_power()
@@ -592,6 +632,19 @@ class CharacterConfirmationEventHandler(CharacterCreationEventHandler):
 
         width = 70
 
+        items_to_print = [
+            f"Your Character:",
+            f"",
+            f"Name: {self.engine.player.name}",
+            f"Gender: {self.engine.player.gender.name.lower().capitalize()}",
+            f"Race: {self.engine.player.race.name}",
+            f"Class: {self.engine.player.character_class.name}",
+            f"Birthsign: {self.engine.player.birthsign.name}",
+            f"",
+            f"[y] Yes",
+            f"[n] No"
+        ]
+
         console.draw_frame(
             x=x,
             y=y,
@@ -603,55 +656,13 @@ class CharacterConfirmationEventHandler(CharacterCreationEventHandler):
             bg=(0, 0, 0)
         )
 
-        console.print(
-            x=x + 1, y=y + 1,
-            string=f"Your Character:"
-        )
+        for y_index, item_to_print in enumerate(items_to_print):
+            console.print(
+                x=x + 1,
+                y=y + y_index,
+                string=item_to_print
+            )
 
-        console.print(
-            x=x + 1, y=y + 2,
-            string=f""
-        )
-
-        console.print(
-            x=x + 1, y=y + 3,
-            string=f"Name: {self.engine.player.name}"
-        )
-
-        console.print(
-            x=x + 1, y=y + 4,
-            string=f"Gender: {self.engine.player.gender.name.lower().capitalize()}"
-        )
-
-        console.print(
-            x=x + 1, y=y + 5,
-            string=f"Race: {self.engine.player.race.name}"
-        )
-
-        console.print(
-            x=x + 1, y=y + 6,
-            string=f"Class: {self.engine.player.character_class.name}"
-        )
-
-        console.print(
-            x=x + 1, y=y + 7,
-            string=f"Birthsign: {self.engine.player.birthsign.name}"
-        )
-
-        console.print(
-            x=x + 1, y=y + 8,
-            string=f""
-        )
-
-        console.print(
-            x=x + 1, y=y + 9,
-            string=f"[y] Yes"
-        )
-
-        console.print(
-            x=x + 1, y=y + 10,
-            string=f"[n] No"
-        )
 
 class LevelUpEventHandler(AskUserEventHandler):
     TITLE = "Level Up"

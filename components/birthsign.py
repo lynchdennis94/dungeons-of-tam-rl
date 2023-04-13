@@ -38,7 +38,7 @@ class MageBirthsign(Birthsign):
         super().__init__("The Mage")
 
     def apply_abilities(self):
-        self.parent.primary_attributes.max_magicka += 0.5 * self.parent.primary_attributes.intelligence
+        self.parent.primary_attributes.max_magicka += 0.5 * self.parent.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.INTELLIGENCE][1]
 
 
 class ThiefBirthsign(Birthsign):
