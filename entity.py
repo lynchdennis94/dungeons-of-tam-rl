@@ -10,6 +10,7 @@ from components.equipment import Equipment
 from components.equippable import Equippable
 from components.level import Level
 from components.race import Race
+from gender_types import GenderType
 from render_order import RenderOrder
 
 if TYPE_CHECKING:
@@ -94,6 +95,7 @@ class Actor(Entity):
             eyesight_radius: int = 0,
             name: str = "<Unnamed>",
             ai_cls: Type[BaseAI],
+            gender: GenderType = None,
             race: Race = None,
             character_class: CharacterClass = None,
             birthsign: Birthsign = None,
@@ -118,6 +120,7 @@ class Actor(Entity):
         self.ai: Optional[BaseAI] = ai_cls(self)
         self.equipment = equipment
         self.equipment.parent = self
+        self.gender = gender
         self.race = race
         if race:
             self.race.parent = self

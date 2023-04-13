@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+import copy
 from typing import TYPE_CHECKING
 
 from components.base_component import BaseComponent
 from components.primary_attributes import PrimaryAttributes
 from components.skills import Skills
-from gender_types import GenderType
 
 if TYPE_CHECKING:
     from entity import Actor
@@ -16,19 +16,17 @@ class Race(BaseComponent):
 
     def __init__(self,
                  name: str,
-                 gender: GenderType,
                  base_primary_attributes: PrimaryAttributes,
                  base_skills: Skills,
                  magicka_multiplier: float = 0.0):  # TODO: Add resistances, and racial descriptions
         self.name = name
-        self.gender = gender
         self.base_primary_attributes = base_primary_attributes
         self.base_skills = base_skills
         self.magicka_multiplier = magicka_multiplier
 
+
 ARGONIAN_MALE = Race(
     name="Argonian",
-    gender=GenderType.MALE,
     base_primary_attributes=PrimaryAttributes(
         willpower=30, agility=50, speed=50, endurance=30, personality=30
     ),
@@ -38,7 +36,6 @@ ARGONIAN_MALE = Race(
 
 ARGONIAN_FEMALE = Race(
     name="Argonian",
-    gender=GenderType.FEMALE,
     base_primary_attributes=PrimaryAttributes(
         intelligence=50, endurance=30, personality=30
     ),
@@ -48,7 +45,6 @@ ARGONIAN_FEMALE = Race(
 
 BRETON_MALE = Race(
     name="Breton",
-    gender=GenderType.MALE,
     base_primary_attributes=PrimaryAttributes(
         intelligence=50, willpower=50, agility=30, speed=30, endurance=30
     ),
@@ -59,7 +55,6 @@ BRETON_MALE = Race(
 
 BRETON_FEMALE = Race(
     name="Breton",
-    gender=GenderType.FEMALE,
     base_primary_attributes=PrimaryAttributes(
         strength=30, intelligence=50, willpower=50, agility=30, endurance=30
     ),
@@ -70,7 +65,6 @@ BRETON_FEMALE = Race(
 
 DUNMER_MALE = Race(
     name="Dunmer",
-    gender=GenderType.MALE,
     base_primary_attributes=PrimaryAttributes(
         willpower=30, speed=50, personality=30
     ),
@@ -80,7 +74,6 @@ DUNMER_MALE = Race(
 
 DUNMER_FEMALE = Race(
     name="Dunmer",
-    gender=GenderType.FEMALE,
     base_primary_attributes=PrimaryAttributes(
         willpower=30, speed=50, endurance=30
     ),
@@ -90,7 +83,6 @@ DUNMER_FEMALE = Race(
 
 ALTMER_MALE = Race(
     name="Altmer",
-    gender=GenderType.MALE,
     base_primary_attributes=PrimaryAttributes(
         strength=30, intelligence=50, speed=30
     ),
@@ -101,7 +93,6 @@ ALTMER_MALE = Race(
 
 ALTMER_FEMALE = Race(
     name="Altmer",
-    gender=GenderType.FEMALE,
     base_primary_attributes=PrimaryAttributes(
         strength=30, intelligence=50, endurance=30
     ),
@@ -112,7 +103,6 @@ ALTMER_FEMALE = Race(
 
 IMPERIAL_MALE = Race(
     name="Imperial",
-    gender=GenderType.MALE,
     base_primary_attributes=PrimaryAttributes(
         willpower=30, agility=30, personality=50
     ),
@@ -122,7 +112,6 @@ IMPERIAL_MALE = Race(
 
 IMPERIAL_FEMALE = Race(
     name="Imperial",
-    gender=GenderType.FEMALE,
     base_primary_attributes=PrimaryAttributes(
         agility=30, speed=30, personality=50
     ),
@@ -132,7 +121,6 @@ IMPERIAL_FEMALE = Race(
 
 KHAJIIT_MALE = Race(
     name="Khajiit",
-    gender=GenderType.MALE,
     base_primary_attributes=PrimaryAttributes(
         willpower=30, agility=50, endurance=30
     ),
@@ -142,7 +130,6 @@ KHAJIIT_MALE = Race(
 
 KHAJIIT_FEMALE = Race(
     name="Khajiit",
-    gender=GenderType.FEMALE,
     base_primary_attributes=PrimaryAttributes(
         strength=30, willpower=30, agility=50
     ),
@@ -152,7 +139,6 @@ KHAJIIT_FEMALE = Race(
 
 NORD_MALE = Race(
     name="Nord",
-    gender=GenderType.MALE,
     base_primary_attributes=PrimaryAttributes(
         strength=50, intelligence=30, agility=30, endurance=50, personality=30
     ),
@@ -162,7 +148,6 @@ NORD_MALE = Race(
 
 NORD_FEMALE = Race(
     name="Nord",
-    gender=GenderType.FEMALE,
     base_primary_attributes=PrimaryAttributes(
         strength=50, intelligence=30, willpower=50, agility=30, personality=30
     ),
@@ -172,7 +157,6 @@ NORD_FEMALE = Race(
 
 ORSIMER_MALE = Race(
     name="Orsimer",
-    gender=GenderType.MALE,
     base_primary_attributes=PrimaryAttributes(
         strength=45, intelligence=30, willpower=50, agility=35, speed=30, endurance=50, personality=30
     ),
@@ -182,7 +166,6 @@ ORSIMER_MALE = Race(
 
 ORSIMER_FEMALE = Race(
     name="Orsimer",
-    gender=GenderType.FEMALE,
     base_primary_attributes=PrimaryAttributes(
         strength=45, willpower=45, agility=35, speed=30, endurance=50, personality=25
     ),
@@ -192,7 +175,6 @@ ORSIMER_FEMALE = Race(
 
 REDGUARD_MALE = Race(
     name="Redguard",
-    gender=GenderType.MALE,
     base_primary_attributes=PrimaryAttributes(
         strength=50, intelligence=30, willpower=30, endurance=50, personality=30
     ),
@@ -202,7 +184,6 @@ REDGUARD_MALE = Race(
 
 REDGUARD_FEMALE = Race(
     name="Redguard",
-    gender=GenderType.FEMALE,
     base_primary_attributes=PrimaryAttributes(
         intelligence=30, willpower=30, endurance=50
     ),
@@ -212,7 +193,6 @@ REDGUARD_FEMALE = Race(
 
 BOSMER_MALE = Race(
     name="Bosmer",
-    gender=GenderType.MALE,
     base_primary_attributes=PrimaryAttributes(
         strength=30, willpower=30, agility=50, speed=50, endurance=30
     ),
@@ -222,7 +202,6 @@ BOSMER_MALE = Race(
 
 BOSMER_FEMALE = Race(
     name="Bosmer",
-    gender=GenderType.FEMALE,
     base_primary_attributes=PrimaryAttributes(
         strength=30, willpower=30, agility=50, speed=50, endurance=30
     ),
@@ -231,28 +210,28 @@ BOSMER_FEMALE = Race(
     ))
 
 MALE_RACES = [
-    ARGONIAN_MALE,
-    BRETON_MALE,
-    DUNMER_MALE,
-    IMPERIAL_MALE,
-    ALTMER_MALE,
-    ORSIMER_MALE,
-    NORD_MALE,
-    BOSMER_MALE,
-    REDGUARD_MALE,
-    KHAJIIT_MALE
+    copy.deepcopy(ARGONIAN_MALE),
+    copy.deepcopy(BRETON_MALE),
+    copy.deepcopy(DUNMER_MALE),
+    copy.deepcopy(IMPERIAL_MALE),
+    copy.deepcopy(ALTMER_MALE),
+    copy.deepcopy(ORSIMER_MALE),
+    copy.deepcopy(NORD_MALE),
+    copy.deepcopy(BOSMER_MALE),
+    copy.deepcopy(REDGUARD_MALE),
+    copy.deepcopy(KHAJIIT_MALE)
 ]
 
 FEMALE_RACES = [
-    ARGONIAN_FEMALE,
-    BRETON_FEMALE,
-    DUNMER_FEMALE,
-    IMPERIAL_FEMALE,
-    ALTMER_FEMALE,
-    ORSIMER_FEMALE,
-    NORD_FEMALE,
-    BOSMER_FEMALE,
-    REDGUARD_FEMALE,
-    KHAJIIT_FEMALE
+    copy.deepcopy(ARGONIAN_FEMALE),
+    copy.deepcopy(BRETON_FEMALE),
+    copy.deepcopy(DUNMER_FEMALE),
+    copy.deepcopy(IMPERIAL_FEMALE),
+    copy.deepcopy(ALTMER_FEMALE),
+    copy.deepcopy(ORSIMER_FEMALE),
+    copy.deepcopy(NORD_FEMALE),
+    copy.deepcopy(BOSMER_FEMALE),
+    copy.deepcopy(REDGUARD_FEMALE),
+    copy.deepcopy(KHAJIIT_FEMALE)
 ]
 

@@ -25,7 +25,6 @@ class PrimaryAttributesEnum(Enum):
 
 class PrimaryAttributes(BaseComponent):
     parent: Actor
-    primary_attribute_map: Dict = {}
 
     def __init__(
             self,
@@ -39,14 +38,14 @@ class PrimaryAttributes(BaseComponent):
             luck: int = 40):
 
         # Primary attributes
-        self.primary_attribute_map[PrimaryAttributesEnum.STRENGTH] = ("Strength", strength)
-        self.primary_attribute_map[PrimaryAttributesEnum.INTELLIGENCE] = ("Intelligence", intelligence)
-        self.primary_attribute_map[PrimaryAttributesEnum.WILLPOWER] = ("Willpower", willpower)
-        self.primary_attribute_map[PrimaryAttributesEnum.AGILITY] = ("Agility", agility)
-        self.primary_attribute_map[PrimaryAttributesEnum.SPEED] = ("Speed", speed)
-        self.primary_attribute_map[PrimaryAttributesEnum.ENDURANCE] = ("Endurance", endurance)
-        self.primary_attribute_map[PrimaryAttributesEnum.PERSONALITY] = ("Personality", personality)
-        self.primary_attribute_map[PrimaryAttributesEnum.LUCK] = ("Luck", luck)
+        self.primary_attribute_map = {PrimaryAttributesEnum.STRENGTH: ("Strength", strength),
+                                      PrimaryAttributesEnum.INTELLIGENCE: ("Intelligence", intelligence),
+                                      PrimaryAttributesEnum.WILLPOWER: ("Willpower", willpower),
+                                      PrimaryAttributesEnum.AGILITY: ("Agility", agility),
+                                      PrimaryAttributesEnum.SPEED: ("Speed", speed),
+                                      PrimaryAttributesEnum.ENDURANCE: ("Endurance", endurance),
+                                      PrimaryAttributesEnum.PERSONALITY: ("Personality", personality),
+                                      PrimaryAttributesEnum.LUCK: ("Luck", luck)}
 
         # Derived Attributes
         self.max_health = (strength + endurance) // 2

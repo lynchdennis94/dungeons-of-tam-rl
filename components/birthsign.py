@@ -142,3 +142,20 @@ class TowerBirthsign(Birthsign):
 
     def add_power(self):
         pass  # TODO: Add power
+
+
+BIRTHSIGN_LIST = [
+    WarriorBirthsign(),
+    MageBirthsign(),
+    ThiefBirthsign(),
+    SerpentBirthsign(),
+    LadyBirthsign(),
+    SteedBirthsign(),
+    LordBirthsign(),
+    ApprenticeBirthsign(),
+    AtronachBirthsign(),
+    RitualBirthsign(),
+    LoverBirthsign(),
+    ShadowBirthsign(),
+    TowerBirthsign()
+]

@@ -77,7 +77,6 @@ STEALTH_SKILLS = [
 
 class Skills(BaseComponent):
     parent: Actor
-    skill_map = {}
 
     def __init__(self, 
                  heavy_armor: int = 0,
@@ -107,30 +106,21 @@ class Skills(BaseComponent):
                  destruction: int = 0,
                  mysticism: int = 0,
                  restoration: int = 0):
-        self.skill_map[SkillEnum.HEAVY_ARMOR] = ("Heavy Armor", heavy_armor)
-        self.skill_map[SkillEnum.MEDIUM_ARMOR] = ("Medium Armor", medium_armor)
-        self.skill_map[SkillEnum.SPEAR] = ("Spear", spear)
-        self.skill_map[SkillEnum.ACROBATICS] = ("Acrobatics", acrobatics)
-        self.skill_map[SkillEnum.ARMORER] = ("Armorer", armorer)
-        self.skill_map[SkillEnum.AXE] = ("Axe", axe)
-        self.skill_map[SkillEnum.BLUNT_WEAPON] = ("Blunt Weapon", blunt_weapon)
-        self.skill_map[SkillEnum.LONG_BLADE] = ("Long Blade", long_blade)
-        self.skill_map[SkillEnum.BLOCK] = ("Block", block)
-        self.skill_map[SkillEnum.LIGHT_ARMOR] = ("Light Armor", light_armor)
-        self.skill_map[SkillEnum.MARKSMAN] = ("Marksman", marksman)
-        self.skill_map[SkillEnum.SNEAK] = ("Sneak", sneak)
-        self.skill_map[SkillEnum.ATHLETICS] = ("Athletics", athletics)
-        self.skill_map[SkillEnum.HAND_TO_HAND] = ("Hand-to-Hand", hand_to_hand)
-        self.skill_map[SkillEnum.SHORT_BLADE] = ("Short Blade", short_blade)
-        self.skill_map[SkillEnum.UNARMORED] = ("Unarmored", unarmored)
-        self.skill_map[SkillEnum.ILLUSION] = ("Illusion", illusion)
-        self.skill_map[SkillEnum.MERCANTILE] = ("Mercantile", mercantile)
-        self.skill_map[SkillEnum.SPEECHCRAFT] = ("Speechcraft", speechcraft)
-        self.skill_map[SkillEnum.ALCHEMY] = ("Alchemy", alchemy)
-        self.skill_map[SkillEnum.CONJURATION] = ("Conjuration", conjuration)
-        self.skill_map[SkillEnum.ENCHANT] = ("Enchant", enchant)
-        self.skill_map[SkillEnum.SECURITY] = ("Security", security)
-        self.skill_map[SkillEnum.ALTERATION] = ("Alteration", alteration)
-        self.skill_map[SkillEnum.DESTRUCTION] = ("Destruction", destruction)
-        self.skill_map[SkillEnum.MYSTICISM] = ("Mysticism", mysticism)
-        self.skill_map[SkillEnum.RESTORATION] = ("Restoration", restoration)
+        self.skill_map = {SkillEnum.HEAVY_ARMOR: ("Heavy Armor", heavy_armor),
+                          SkillEnum.MEDIUM_ARMOR: ("Medium Armor", medium_armor), SkillEnum.SPEAR: ("Spear", spear),
+                          SkillEnum.ACROBATICS: ("Acrobatics", acrobatics), SkillEnum.ARMORER: ("Armorer", armorer),
+                          SkillEnum.AXE: ("Axe", axe), SkillEnum.BLUNT_WEAPON: ("Blunt Weapon", blunt_weapon),
+                          SkillEnum.LONG_BLADE: ("Long Blade", long_blade), SkillEnum.BLOCK: ("Block", block),
+                          SkillEnum.LIGHT_ARMOR: ("Light Armor", light_armor),
+                          SkillEnum.MARKSMAN: ("Marksman", marksman), SkillEnum.SNEAK: ("Sneak", sneak),
+                          SkillEnum.ATHLETICS: ("Athletics", athletics),
+                          SkillEnum.HAND_TO_HAND: ("Hand-to-Hand", hand_to_hand),
+                          SkillEnum.SHORT_BLADE: ("Short Blade", short_blade),
+                          SkillEnum.UNARMORED: ("Unarmored", unarmored), SkillEnum.ILLUSION: ("Illusion", illusion),
+                          SkillEnum.MERCANTILE: ("Mercantile", mercantile),
+                          SkillEnum.SPEECHCRAFT: ("Speechcraft", speechcraft), SkillEnum.ALCHEMY: ("Alchemy", alchemy),
+                          SkillEnum.CONJURATION: ("Conjuration", conjuration), SkillEnum.ENCHANT: ("Enchant", enchant),
+                          SkillEnum.SECURITY: ("Security", security), SkillEnum.ALTERATION: ("Alteration", alteration),
+                          SkillEnum.DESTRUCTION: ("Destruction", destruction),
+                          SkillEnum.MYSTICISM: ("Mysticism", mysticism),
+                          SkillEnum.RESTORATION: ("Restoration", restoration)}

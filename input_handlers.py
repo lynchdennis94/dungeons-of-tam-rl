@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import os
 from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
 
@@ -10,7 +11,10 @@ from actions import Action, BumpAction, DropItemAction, PickupAction, WaitAction
 
 import colors
 import exceptions
+from components import character_class, birthsign
 from components.primary_attributes import *
+from components.race import MALE_RACES, FEMALE_RACES
+from gender_types import GenderType
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -267,6 +271,313 @@ class CharacterScreenEventHandler(AskUserEventHandler):
             string=f""
         )
 
+
+class CharacterCreationEventHandler(AskUserEventHandler):
+    TITLE = "Create a Character"
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        return None
+
+    def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Optional[ActionOrHandler]:
+        return None
+
+
+class GenderSelectionEventHandler(CharacterCreationEventHandler):
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        match event.sym:
+            case tcod.event.K_m:
+                self.engine.player.gender = GenderType.MALE
+            case tcod.event.K_f:
+                self.engine.player.gender = GenderType.FEMALE
+            case _:
+                return None
+
+        return RaceSelectionEventHandler(self.engine)
+
+    def on_render(self, console: tcod.Console) -> None:
+        x = 5
+        y = 5
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f""
+        )
+
+        width = 70
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=5,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
+        )
+
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f"Choose your Gender:"
+        )
+
+        console.print(
+            x=x + 1, y=y + 2,
+            string=f"[M] Male"
+        )
+
+        console.print(
+            x=x + 1, y=y + 3,
+            string=f"[F] Female"
+        )
+
+
+class RaceSelectionEventHandler(CharacterCreationEventHandler):
+    def __init__(self, engine: Engine):
+        super().__init__(engine)
+
+        self.selection_list = []
+        race_list = MALE_RACES if self.engine.player.gender == GenderType.MALE else FEMALE_RACES
+
+        for i, race in enumerate(race_list):
+            selection_character = chr(ord('a') + i)
+            self.selection_list.append((selection_character, race))
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        index = event.sym - tcod.event.K_a
+        if 0 <= index <= len(self.selection_list):
+            self.engine.player.race = self.selection_list[index][1]
+            self.engine.player.race.parent = self.engine.player
+            return ClassSelectionEventHandler(self.engine)
+
+        return None
+
+    def on_render(self, console: tcod.Console) -> None:
+        x = 5
+        y = 5
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f""
+        )
+
+        width = 70
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=13,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
+        )
+
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f"Choose your Race:"
+        )
+
+        y_index = y + 2
+        for selection_character, race in self.selection_list:
+            console.print(
+                x=x + 1, y=y_index,
+                string=f"[{selection_character}] {race.name}"
+            )
+
+            y_index += 1
+
+
+class ClassSelectionEventHandler(CharacterCreationEventHandler):
+    def __init__(self, engine: Engine):
+        super().__init__(engine)
+
+        self.selection_list = []
+        class_list = character_class.CHARACTER_CLASS_LIST
+        for i, class_choice in enumerate(class_list):
+            selection_character = chr(ord('a') + i)
+            self.selection_list.append((selection_character, class_choice))
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        index = event.sym - tcod.event.K_a
+        if 0 <= index <= len(self.selection_list):
+            self.engine.player.character_class = self.selection_list[index][1]
+            self.engine.player.character_class.parent = self.engine.player
+            return BirthSignSelectionEventHandler(self.engine)
+
+        return None
+
+    def on_render(self, console: tcod.Console) -> None:
+        x = 5
+        y = 5
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f""
+        )
+
+        width = 70
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=24,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
+        )
+
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f"Choose your Class:"
+        )
+
+        y_index = y + 2
+        for selection_character, race in self.selection_list:
+            console.print(
+                x=x + 1, y=y_index,
+                string=f"[{selection_character}] {race.name}"
+            )
+
+            y_index += 1
+
+
+class BirthSignSelectionEventHandler(CharacterCreationEventHandler):
+    def __init__(self, engine: Engine):
+        super().__init__(engine)
+
+        self.selection_list = []
+        birthsign_list = birthsign.BIRTHSIGN_LIST
+        for i, birthsign_choice in enumerate(birthsign_list):
+            selection_character = chr(ord('a') + i)
+            self.selection_list.append((selection_character, birthsign_choice))
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        index = event.sym - tcod.event.K_a
+        if 0 <= index <= len(self.selection_list):
+            self.engine.player.birthsign = self.selection_list[index][1]
+            self.engine.player.birthsign.parent = self.engine.player
+            return CharacterConfirmationEventHandler(self.engine)
+
+        return None
+
+    def on_render(self, console: tcod.Console) -> None:
+        x = 5
+        y = 5
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f""
+        )
+
+        width = 70
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=16,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
+        )
+
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f"Choose your Birthsign:"
+        )
+
+        y_index = y + 2
+        for selection_character, birthsign_element in self.selection_list:
+            console.print(
+                x=x + 1, y=y_index,
+                string=f"[{selection_character}] {birthsign_element.name}"
+            )
+
+            y_index += 1
+
+
+class CharacterConfirmationEventHandler(CharacterCreationEventHandler):
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        match event.sym:
+            case tcod.event.K_y:
+                # Finalize the character creation and start the game
+                self.engine.player.primary_attributes.primary_attribute_map = self.engine.player.race.base_primary_attributes.primary_attribute_map
+                self.engine.player.character_class.set_skill_level_factor_weights()
+                self.engine.player.character_class.set_attribute_bonuses()
+                self.engine.player.character_class.set_skill_bonuses()
+                self.engine.player.birthsign.apply_abilities()
+                self.engine.player.birthsign.add_spell()
+                self.engine.player.birthsign.add_power()
+
+                return MainGameEventHandler(self.engine)
+            case tcod.event.K_n:
+                # Return to start of character creation screen
+                return GenderSelectionEventHandler(self.engine)
+            case _:
+                return None
+
+    def on_render(self, console: tcod.Console) -> None:
+        x = 5
+        y = 5
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f""
+        )
+
+        width = 70
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=10,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
+        )
+
+        console.print(
+            x=x + 1, y=y + 1,
+            string=f"Your Character:"
+        )
+
+        console.print(
+            x=x + 1, y=y + 2,
+            string=f"Gender: {self.engine.player.gender.name.lower().capitalize()}"
+        )
+
+        console.print(
+            x=x + 1, y=y + 3,
+            string=f"Race: {self.engine.player.race.name}"
+        )
+
+        console.print(
+            x=x + 1, y=y + 4,
+            string=f"Class: {self.engine.player.character_class.name}"
+        )
+
+        console.print(
+            x=x + 1, y=y + 5,
+            string=f"Birthsign: {self.engine.player.birthsign.name}"
+        )
+
+        console.print(
+            x=x + 1, y=y + 6,
+            string=f""
+        )
+
+        console.print(
+            x=x + 1, y=y + 7,
+            string=f"[y] Yes"
+        )
+
+        console.print(
+            x=x + 1, y=y + 8,
+            string=f"[n] No"
+        )
 
 class LevelUpEventHandler(AskUserEventHandler):
     TITLE = "Level Up"

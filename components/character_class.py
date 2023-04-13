@@ -41,21 +41,25 @@ class CharacterClass(BaseComponent):
         for skill in self.minor_skills_list:
             self.skill_level_factors[skill] = 1.0
 
-    def set_base_skill_values(self):
+    def set_skill_bonuses(self):
         # Initialize the parent skills
         for skill in SkillEnum:
-            self.parent.skills.skill_map[skill] = 5
+            name, val = self.parent.skills.skill_map[skill]
+            self.parent.skills.skill_map[skill] = (name, val + 5)
 
         # Overwrite major and minor skills
         for skill in self.major_skills_list:
-            self.parent.skills.skill_map[skill] = 30
+            name, val = self.parent.skills.skill_map[skill]
+            self.parent.skills.skill_map[skill] = (name, val + 30)
 
         for skill in self.minor_skills_list:
-            self.parent.skills.skill_map[skill] = 15
+            name, val = self.parent.skills.skill_map[skill]
+            self.parent.skills.skill_map[skill] = (name, val + 15)
 
     def set_attribute_bonuses(self):
         for attribute in self.favored_attributes_list:
-            self.parent.primary_attributes.primary_attribute_map[attribute] += 10
+            name, val = self.parent.primary_attributes.primary_attribute_map[attribute]
+            self.parent.primary_attributes.primary_attribute_map[attribute] = name, val + 10
 
 
 Acrobat = CharacterClass(name="Acrobat",
@@ -435,3 +439,28 @@ Witchhunter = CharacterClass(name="Witchhunter",
                        ],
                        specialization_skills=MAGIC_SKILLS,
                        favored_attributes=[PrimaryAttributesEnum.AGILITY, PrimaryAttributesEnum.INTELLIGENCE])
+
+
+CHARACTER_CLASS_LIST = [
+    Acrobat,
+    Agent,
+    Archer,
+    Assassin,
+    Barbarian,
+    Bard,
+    Battlemage,
+    Crusader,
+    Healer,
+    Knight,
+    Mage,
+    Monk,
+    Nightblade,
+    Pilgrim,
+    Rogue,
+    Scout,
+    Sorcerer,
+    Spellsword,
+    Thief,
+    Warrior,
+    Witchhunter
+]
