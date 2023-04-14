@@ -30,6 +30,15 @@ class SteelAxe(Equippable):
             max_power=18)
 
 
+class SteelWarAxe(Equippable):
+    def __init__(self) -> None:
+        super().__init__(
+            equipment_type=EquipmentType.ONE_HANDED_WEAPON,
+            weapon_type=WeaponType.AXES,
+            min_power=1,
+            max_power=20)
+
+
 class SilverWarAxe(Equippable):
     def __init__(self) -> None:
         super().__init__(

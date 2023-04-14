@@ -10,9 +10,8 @@ from typing import Optional
 import tcod
 
 import colors
-import entity_factories
+from factories import entity_factories
 import input_handlers
-from components.race import FEMALE_RACES
 from engine import Engine
 from game_map import GameWorld
 

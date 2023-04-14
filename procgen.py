@@ -5,7 +5,7 @@ from typing import Dict, Iterator, List, Tuple, TYPE_CHECKING
 
 import tcod
 
-import entity_factories
+from factories import entity_factories, weapon_factories, armor_factories
 from game_map import GameMap
 import tile_types
 
@@ -25,14 +25,14 @@ max_monsters_by_floor = [
 ]
 
 item_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.health_potion, 35)],
-    2: [(entity_factories.scroll_of_confusion, 10), (entity_factories.dagger, 20)],
-    4: [(entity_factories.scroll_of_lightning, 25), (entity_factories.sword, 5), (entity_factories.leather_armor, 10)],
-    6: [(entity_factories.scroll_of_fireball, 25), (entity_factories.chain_mail, 15)],
+    0: [(armor_factories.chitin_boots, 50)],
+    2: [(entity_factories.scroll_of_confusion, 10)],
+    4: [(entity_factories.scroll_of_lightning, 25)],
+    6: [(entity_factories.scroll_of_fireball, 25)],
 }
 
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.orc, 80)],
+    0: [(entity_factories.orc, 1)],
     3: [(entity_factories.troll, 15)],
     5: [(entity_factories.troll, 30)],
     7: [(entity_factories.troll, 60)],
