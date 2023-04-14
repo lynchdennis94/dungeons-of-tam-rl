@@ -37,7 +37,16 @@ class Equipment(BaseComponent):
         self.rand_generator = Random()
 
     def item_is_equipped(self, item: Item) -> bool:
-        return self.weapon == item or self.armor == item
+        return self.weapon == item or \
+            self.cuirass == item or \
+            self.helmet == item or \
+            self.left_shoulder == item or \
+            self.right_shoulder == item or \
+            self.left_hand_armor == item or \
+            self.right_hand_armor == item or \
+            self.greaves == item or \
+            self.boots == item or \
+            self.shield == item
 
     def unequip_message(self, item_name: str) -> None:
         self.parent.gamemap.engine.message_log.add_message(f"You remove the {item_name}")
@@ -65,12 +74,34 @@ class Equipment(BaseComponent):
         setattr(self, slot, None)
 
     def toggle_equip(self, equippable_item: Item, add_message: bool = True) -> None:
-        if equippable_item.equippable and equippable_item.equippable.equipment_type == EquipmentType.WEAPON:
-            slot = "weapon"
-        else:
-            slot = "armor"
+        slot = "none"
+        if equippable_item.equippable:
+            if equippable_item.equippable.weapon_type:
+                slot = "weapon"
+            elif equippable_item.equippable.equipment_type == EquipmentType.CUIRASS:
+                slot = "cuirass"
+            elif equippable_item.equippable.equipment_type == EquipmentType.HELMET:
+                slot = "helmet"
+            elif equippable_item.equippable.equipment_type == EquipmentType.LEFT_PAULDRON:
+                slot = "left_pauldron"
+            elif equippable_item.equippable.equipment_type == EquipmentType.RIGHT_PAULDRON:
+                slot = "right_pauldron"
+            elif equippable_item.equippable.equipment_type == EquipmentType.LEFT_HAND:
+                slot = "left_hand_armor"
+            elif equippable_item.equippable.equipment_type == EquipmentType.RIGHT_HAND:
+                slot = "right_hand_armor"
+            elif equippable_item.equippable.equipment_type == EquipmentType.GREAVES:
+                slot = "greaves"
+            elif equippable_item.equippable.equipment_type == EquipmentType.BOOTS:
+                slot = "boots"
+            elif equippable_item.equippable.equipment_type == EquipmentType.SHIELD:
+                weapon_item = getattr(self, "weapon")
+                if weapon_item and weapon_item.equippable.equipment_type == EquipmentType.TWO_HANDED_WEAPON:
+                    return  # We can't equip a shield AND a two handed weapon
+                    # TODO: Put up some sort of error saying you can't do this
+                slot = "shield"
 
-        if getattr(self, slot) == equippable_item:
-            self.unequip_from_slot(slot, add_message)
-        else:
-            self.equip_to_slot(slot, equippable_item, add_message)
+            if getattr(self, slot) == equippable_item:
+                self.unequip_from_slot(slot, add_message)
+            else:
+                self.equip_to_slot(slot, equippable_item, add_message)
