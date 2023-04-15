@@ -11,7 +11,7 @@ import tile_types
 
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Entity
+    from entity import Entity, Item
 
 max_items_by_floor = [
     (1, 1),
@@ -24,12 +24,47 @@ max_monsters_by_floor = [
     (6, 5)
 ]
 
-item_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(armor_factories.chitin_boots, 50)],
-    2: [(entity_factories.scroll_of_confusion, 10)],
-    4: [(entity_factories.scroll_of_lightning, 25)],
-    6: [(entity_factories.scroll_of_fireball, 25)],
-}
+
+def initialize_items_for_floor(
+        floor: int,
+        item_list: List[Item],
+        item_chance_dict: Dict[int,List[Tuple[Entity, int]]] ):
+    if floor not in item_chances:
+        item_chance_dict[floor] = []
+
+    for item in item_list:
+        item_chance_dict[floor].append((item, 10))
+
+
+item_chances: Dict[int, List[Tuple[Entity, int]]] = {}
+
+# Add armor chances
+initialize_items_for_floor(0, armor_factories.NETCH_LEATHER_ARMOR, item_chances)
+initialize_items_for_floor(5, armor_factories.CHITIN_ARMOR, item_chances)
+initialize_items_for_floor(15, armor_factories.DREUGH_LEATHER_ARMOR, item_chances)
+initialize_items_for_floor(30, armor_factories.GLASS_ARMOR, item_chances)
+initialize_items_for_floor(2, armor_factories.CHAIN_ARMOR, item_chances)
+initialize_items_for_floor(7, armor_factories.BONEMOLD_ARMOR, item_chances)
+initialize_items_for_floor(17, armor_factories.ORCISH_ARMOR, item_chances)
+initialize_items_for_floor(32, armor_factories.INDORIL_ARMOR, item_chances)
+initialize_items_for_floor(4, armor_factories.IRON_ARMOR, item_chances)
+initialize_items_for_floor(9, armor_factories.STEEL_ARMOR, item_chances)
+initialize_items_for_floor(19, armor_factories.DWEMER_ARMOR, item_chances)
+initialize_items_for_floor(35, armor_factories.EBONY_ARMOR, item_chances)
+initialize_items_for_floor(45, armor_factories.DAEDRIC_ARMOR, item_chances)
+
+# Add weapon chances
+initialize_items_for_floor(0, weapon_factories.CHITIN_WEAPONS, item_chances)
+initialize_items_for_floor(5, weapon_factories.IRON_WEAPONS, item_chances)
+initialize_items_for_floor(10, weapon_factories.STEEL_WEAPONS, item_chances)
+initialize_items_for_floor(15, weapon_factories.IMPERIAL_WEAPONS, item_chances)
+initialize_items_for_floor(20, weapon_factories.NORDIC_WEAPONS, item_chances)
+initialize_items_for_floor(25, weapon_factories.SILVER_WEAPONS, item_chances)
+initialize_items_for_floor(30, weapon_factories.DWEMER_WEAPONS, item_chances)
+initialize_items_for_floor(35, weapon_factories.GLASS_WEAPONS, item_chances)
+initialize_items_for_floor(40, weapon_factories.EBONY_WEAPONS, item_chances)
+initialize_items_for_floor(45, weapon_factories.DAEDRIC_WEAPONS, item_chances)
+
 
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
     0: [(entity_factories.orc, 1)],
@@ -37,6 +72,8 @@ enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
     5: [(entity_factories.troll, 30)],
     7: [(entity_factories.troll, 60)],
 }
+
+
 
 def get_max_value_for_floor(weighted_chances_by_floor: List[Tuple[int, int]], floor: int) -> int:
     current_value = 0

@@ -1,153 +1,239 @@
+import math
+from typing import Tuple, List
+
 import colors
+from components.equippable import Equippable
 from entity import Item
-from weapons.axes import *
-from weapons.blunt_weapons import *
-from weapons.short_blades import *
-from weapons.long_blades import *
-from weapons.spears import *
+from equipment_types import EquipmentType
+from weapon_types import WeaponType
 
-'''Axes'''
 
-chitin_war_axe = Item(
-    char='\u2191',
+class WeaponMaterialConstructor:
+    def __init__(self,
+                 name: str,
+                 color: Tuple,
+                 min_power_multiplier: float,
+                 max_power_multiplier: float):
+        self.name = name
+        self.color = color
+        self.min_power_multiplier = min_power_multiplier
+        self.max_power_multiplier = max_power_multiplier
+
+
+class WeaponTypeConstructor:
+    def __init__(self,
+                 name: str,
+                 glyph: str,
+                 equipment_type: EquipmentType,
+                 weapon_type: WeaponType,
+                 min_power_base: int,
+                 max_power_base: int):
+        self.name = name
+        self.glyph = glyph
+        self.equipment_type = equipment_type
+        self.weapon_type = weapon_type
+        self.min_power_base = min_power_base
+        self.max_power_base = max_power_base
+
+
+def build_weapon_from_constructors(
+        weapon_type_constructor: WeaponTypeConstructor,
+        weapon_material_constructor: WeaponMaterialConstructor) -> Item:
+    return Item(
+        char=weapon_type_constructor.glyph,
+        color=weapon_material_constructor.color,
+        name=f"{weapon_material_constructor.name} {weapon_type_constructor.name}",
+        equippable=Equippable(
+            equipment_type=weapon_type_constructor.equipment_type,
+            weapon_type=weapon_type_constructor.weapon_type,
+            min_power=math.floor(
+                weapon_type_constructor.min_power_base * weapon_material_constructor.min_power_multiplier),
+            max_power=math.floor(
+                weapon_type_constructor.max_power_base * weapon_material_constructor.max_power_multiplier)
+        )
+    )
+
+
+def initialize_base_weapons(weapon_material_constructor: WeaponMaterialConstructor) -> List[Item]:
+    result = []
+    for weapon_type_constructor in WEAPON_TYPE_CONSTRUCTORS:
+        result.append(build_weapon_from_constructors(weapon_type_constructor[0], weapon_material_constructor))
+
+    return result
+
+
+'''Weapon Constructors'''
+war_axe_constructor = WeaponTypeConstructor(
+    name="War Axe",
+    glyph='\u2191',
+    equipment_type=EquipmentType.ONE_HANDED_WEAPON,
+    weapon_type=WeaponType.AXES,
+    min_power_base=1,
+    max_power_base=11),
+
+battle_axe_constructor = WeaponTypeConstructor(
+    name="Battle Axe",
+    glyph='\u2191',
+    equipment_type=EquipmentType.TWO_HANDED_WEAPON,
+    weapon_type=WeaponType.AXES,
+    min_power_base=1,
+    max_power_base=20),
+
+club_constructor = WeaponTypeConstructor(
+    name="Club",
+    glyph='\u00B6',
+    equipment_type=EquipmentType.ONE_HANDED_WEAPON,
+    weapon_type=WeaponType.BLUNT_WEAPONS,
+    min_power_base=2,
+    max_power_base=3),
+
+warhammer_constructor = WeaponTypeConstructor(
+    name="Warhammer",
+    glyph='\u00B6',
+    equipment_type=EquipmentType.TWO_HANDED_WEAPON,
+    weapon_type=WeaponType.BLUNT_WEAPONS,
+    min_power_base=1,
+    max_power_base=18),
+
+dagger_constructor = WeaponTypeConstructor(
+    name="Dagger",
+    glyph='`',
+    equipment_type=EquipmentType.ONE_HANDED_WEAPON,
+    weapon_type=WeaponType.SHORT_BLADES,
+    min_power_base=2,
+    max_power_base=3),
+
+shortsword_constructor = WeaponTypeConstructor(
+    name="Shortsword",
+    glyph='`',
+    equipment_type=EquipmentType.ONE_HANDED_WEAPON,
+    weapon_type=WeaponType.SHORT_BLADES,
+    min_power_base=3,
+    max_power_base=7),
+
+longsword_constructor = WeaponTypeConstructor(
+    name="Longsword",
+    glyph='\\',
+    equipment_type=EquipmentType.ONE_HANDED_WEAPON,
+    weapon_type=WeaponType.LONG_BLADES,
+    min_power_base=1,
+    max_power_base=12),
+
+claymore_constructor = WeaponTypeConstructor(
+    name="Claymore",
+    glyph='\\',
+    equipment_type=EquipmentType.TWO_HANDED_WEAPON,
+    weapon_type=WeaponType.LONG_BLADES,
+    min_power_base=1,
+    max_power_base=15),
+
+spear_constructor = WeaponTypeConstructor(
+    name="Spear",
+    glyph='\u2192',
+    equipment_type=EquipmentType.TWO_HANDED_WEAPON,
+    weapon_type=WeaponType.SPEARS,
+    min_power_base=2,
+    max_power_base=12),
+
+'''Material Constructors'''
+chitin_material_constructor = WeaponMaterialConstructor(
+    name="Chitin",
     color=colors.CHITIN_COLOR,
-    name="Chitin War Axe",
-    equippable=ChitinWarAxe()
+    min_power_multiplier=1,
+    max_power_multiplier=1
 )
 
-iron_war_axe = Item(
-    char='\u2191',
+iron_material_constructor = WeaponMaterialConstructor(
+    name="Iron",
     color=colors.IRON_COLOR,
-    name="Iron War Axe",
-    equippable=IronWarAxe()
+    min_power_multiplier=1.1,
+    max_power_multiplier=1.6
 )
 
-steel_axe = Item(
-    char='\u2191',
+steel_material_constructor = WeaponMaterialConstructor(
+    name="Steel",
     color=colors.STEEL_COLOR,
-    name="Steel Axe",
-    equippable=SteelAxe()
+    min_power_multiplier=1.2,
+    max_power_multiplier=2
 )
 
-steel_war_axe = Item(
-    char='\u2191',
-    color=colors.STEEL_COLOR,
-    name="Steel War Axe",
-    equippable=SteelWarAxe()
+imperial_material_constructor = WeaponMaterialConstructor(
+    name="Imperial",
+    color=colors.IMPERIAL_COLOR,
+    min_power_multiplier=1.4,
+    max_power_multiplier=2.2
 )
 
-silver_war_axe = Item(
-    char='\u2191',
-    color=colors.SILVER_COLOR,
-    name="Silver War Axe",
-    equippable=SilverWarAxe()
-)
-
-dwarven_war_axe = Item(
-    char='\u2191',
-    color=colors.DWARVEN_COLOR,
-    name="Dwarven War Axe",
-    equippable=DwarvenWarAxe()
-)
-
-glass_war_axe = Item(
-    char='\u2191',
-    color=colors.GLASS_COLOR,
-    name="Glass War Axe",
-    equippable=GlassWarAxe()
-)
-
-ebony_war_axe = Item(
-    char='\u2191',
-    color=colors.EBONY_COLOR,
-    name="Ebony War Axe",
-    equippable=EbonyWarAxe()
-)
-
-daedric_war_axe = Item(
-    char='\u2191',
-    color=colors.DAEDRIC_COLOR,
-    name="Daedric War Axe",
-    equippable=DaedricWarAxe()
-)
-
-miners_pick = Item(
-    char='\u2191',
-    color=colors.IRON_COLOR,
-    name="Miner's Pick",
-    equippable=MinersPick()
-)
-
-iron_battle_axe = Item(
-    char='\u2191',
-    color=colors.IRON_COLOR,
-    name="Iron Battle Axe",
-    equippable=IronBattleAxe()
-)
-
-nordic_battle_axe = Item(
-    char='\u2191',
+nordic_material_constructor = WeaponMaterialConstructor(
+    name="Nordic",
     color=colors.NORDIC_COLOR,
-    name="Nordic Battle Axe",
-    equippable=NordicBattleAxe()
+    min_power_multiplier=1.6,
+    max_power_multiplier=2.4
 )
 
-steel_battle_axe = Item(
-    char='\u2191',
-    color=colors.STEEL_COLOR,
-    name="Steel Battle Axe",
-    equippable=SteelBattleAxe()
+silver_material_constructor = WeaponMaterialConstructor(
+    name="Silver",
+    color=colors.SILVER_COLOR,
+    min_power_multiplier=1.8,
+    max_power_multiplier=2.6
 )
 
-dwarven_battle_axe = Item(
-    char='\u2191',
-    color=colors.DWARVEN_COLOR,
-    name="Dwarven Battle Axe",
-    equippable=DwarvenBattleAxe()
+dwemer_material_constructor = WeaponMaterialConstructor(
+    name="Dwemer",
+    color=colors.DWEMER_COLOR,
+    min_power_multiplier=2,
+    max_power_multiplier=2.8
 )
 
-orcish_battle_axe = Item(
-    char='\u2191',
-    color=colors.ORCISH_COLOR,
-    name="Orcish Battle Axe",
-    equippable=OrcishBattleAxe()
+glass_material_constructor = WeaponMaterialConstructor(
+    name="Glass",
+    color=colors.GLASS_COLOR,
+    min_power_multiplier=2.2,
+    max_power_multiplier=3
 )
 
-daedric_battle_axe = Item(
-    char='\u2191',
+ebony_material_constructor = WeaponMaterialConstructor(
+    name="Ebony",
+    color=colors.EBONY_COLOR,
+    min_power_multiplier=2.5,
+    max_power_multiplier=3.5
+)
+
+daedric_material_constructor = WeaponMaterialConstructor(
+    name="Daedric",
     color=colors.DAEDRIC_COLOR,
-    name="Daedric Battle Axe",
-    equippable=DaedricBattleAxe()
+    min_power_multiplier=2.8,
+    max_power_multiplier=4
 )
 
-'''Blunt Weapons'''
-chitin_club = Item(
-    char='\u00B6',
-    color=colors.CHITIN_COLOR,
-    name="Chitin Club",
-    equippable=ChitinClub()
-)
+WEAPON_TYPE_CONSTRUCTORS = [
+    war_axe_constructor,
+    battle_axe_constructor,
+    club_constructor,
+    warhammer_constructor,
+    dagger_constructor,
+    shortsword_constructor,
+    longsword_constructor,
+    claymore_constructor,
+    spear_constructor
+]
 
-'''Short Blades'''
-chitin_dagger = Item(
-    char="`",
-    color=colors.CHITIN_COLOR,
-    name="Chitin Dagger",
-    equippable=ChitinDagger()
-)
+CHITIN_WEAPONS = initialize_base_weapons(chitin_material_constructor)
 
-'''Long Blades'''
-iron_saber = Item(
-    char="\\",
-    color=colors.IRON_COLOR,
-    name="Iron Saber",
-    equippable=IronSaber()
-)
+IRON_WEAPONS = initialize_base_weapons(iron_material_constructor)
 
-'''Spears'''
-chitin_spear = Item(
-    char='\u2192',
-    color=colors.CHITIN_COLOR,
-    name="Chitin Spear",
-    equippable=ChitinSpear()
-)
+STEEL_WEAPONS = initialize_base_weapons(steel_material_constructor)
+
+IMPERIAL_WEAPONS = initialize_base_weapons(imperial_material_constructor)
+
+NORDIC_WEAPONS = initialize_base_weapons(nordic_material_constructor)
+
+SILVER_WEAPONS = initialize_base_weapons(silver_material_constructor)
+
+DWEMER_WEAPONS = initialize_base_weapons(dwemer_material_constructor)
+
+GLASS_WEAPONS = initialize_base_weapons(glass_material_constructor)
+
+EBONY_WEAPONS = initialize_base_weapons(ebony_material_constructor)
+
+DAEDRIC_WEAPONS = initialize_base_weapons(daedric_material_constructor)

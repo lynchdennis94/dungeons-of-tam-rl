@@ -31,7 +31,7 @@ orc = Actor(
     equipment=Equipment(),
     fighter=Fighter(),
     primary_attributes=PrimaryAttributes(),
-    skills=Skills(),
+    skills=Skills(hand_to_hand=10),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=35)
 )

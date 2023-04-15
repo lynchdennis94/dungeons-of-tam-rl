@@ -5,6 +5,7 @@ from typing import Optional, Tuple, TYPE_CHECKING
 
 import colors
 import exceptions
+from components.skills import SkillEnum
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -152,6 +153,8 @@ class MovementAction(ActionWithDirection):
 class BumpAction(ActionWithDirection):
     def perform(self) -> None:
         if self.target_actor:
+            if self.engine.player.skills.skill_map[SkillEnum.HAND_TO_HAND][1] == 0:
+                print("Found you!")
             return MeleeAction(self.entity, self.dx, self.dy).perform()
         else:
             return MovementAction(self.entity, self.dx, self.dy).perform()

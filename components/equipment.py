@@ -83,9 +83,9 @@ class Equipment(BaseComponent):
             elif equippable_item.equippable.equipment_type == EquipmentType.HELMET:
                 slot = "helmet"
             elif equippable_item.equippable.equipment_type == EquipmentType.LEFT_PAULDRON:
-                slot = "left_pauldron"
+                slot = "left_shoulder"
             elif equippable_item.equippable.equipment_type == EquipmentType.RIGHT_PAULDRON:
-                slot = "right_pauldron"
+                slot = "right_shoulder"
             elif equippable_item.equippable.equipment_type == EquipmentType.LEFT_HAND:
                 slot = "left_hand_armor"
             elif equippable_item.equippable.equipment_type == EquipmentType.RIGHT_HAND:

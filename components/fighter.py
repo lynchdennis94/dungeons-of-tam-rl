@@ -26,7 +26,8 @@ class Fighter(BaseComponent):
         # Get the equipment type
         weapon_skill = self.parent.skills.skill_map[SkillEnum.HAND_TO_HAND][1]
         if self.parent.equipment.weapon and self.parent.equipment.weapon.equippable.weapon_type:
-            weapon_skill = WEAPON_TO_SKILL_MAP[self.parent.equipment.weapon.equippable.weapon_type]
+            weapon_skill = self.parent.skills.skill_map[WEAPON_TO_SKILL_MAP[
+                self.parent.equipment.weapon.equippable.weapon_type]][1]
 
         agility = self.parent.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.AGILITY][1]
         luck = self.parent.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.LUCK][1]
@@ -71,6 +72,7 @@ class Fighter(BaseComponent):
 
     def damage(self, target_armor_rating: int) -> int:
         if self.parent.equipment.weapon and self.parent.equipment.weapon.equippable.weapon_type:
+            print("Handling weapon damage")
             equippable_weapon = self.parent.equipment.weapon.equippable
             weapon_damage = self.rand_generator.randint(equippable_weapon.min_power, equippable_weapon.max_power)
             strength_modifier = (self.parent.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.STRENGTH][
@@ -78,11 +80,15 @@ class Fighter(BaseComponent):
             condition_modifier = 1  # TODO: Add in weapon conditioning
             critical_hit_modifier = 1  # TODO: Add in critical hit logic
         else:
+            print(f"Handling unarmed damage from {self.parent.name}")
+            print(self.parent.skills.skill_map)
             weapon_damage = self.parent.skills.skill_map[SkillEnum.HAND_TO_HAND][1]  # TODO: Add in fatigue damage
             strength_modifier = 0.075
             condition_modifier = 1  # This is always 'perfect' condition
             critical_hit_modifier = 1  # TODO: Add in critical hit logic
 
+        print(f"Weapon damage: {weapon_damage}")
+        print(f"Strength modifier: {strength_modifier}")
         unaltered_damage = weapon_damage * strength_modifier * condition_modifier * critical_hit_modifier
         damage_reduction = min(1 + target_armor_rating / unaltered_damage, 4)
         return math.floor(unaltered_damage / damage_reduction)
