@@ -57,7 +57,7 @@ def build_weapon_from_constructors(
 def initialize_base_weapons(weapon_material_constructor: WeaponMaterialConstructor) -> List[Item]:
     result = []
     for weapon_type_constructor in WEAPON_TYPE_CONSTRUCTORS:
-        result.append(build_weapon_from_constructors(weapon_type_constructor[0], weapon_material_constructor))
+        result.append(build_weapon_from_constructors(weapon_type_constructor, weapon_material_constructor))
 
     return result
 
@@ -69,7 +69,7 @@ war_axe_constructor = WeaponTypeConstructor(
     equipment_type=EquipmentType.ONE_HANDED_WEAPON,
     weapon_type=WeaponType.AXES,
     min_power_base=1,
-    max_power_base=11),
+    max_power_base=11)
 
 battle_axe_constructor = WeaponTypeConstructor(
     name="Battle Axe",
@@ -77,7 +77,7 @@ battle_axe_constructor = WeaponTypeConstructor(
     equipment_type=EquipmentType.TWO_HANDED_WEAPON,
     weapon_type=WeaponType.AXES,
     min_power_base=1,
-    max_power_base=20),
+    max_power_base=20)
 
 club_constructor = WeaponTypeConstructor(
     name="Club",
@@ -85,7 +85,7 @@ club_constructor = WeaponTypeConstructor(
     equipment_type=EquipmentType.ONE_HANDED_WEAPON,
     weapon_type=WeaponType.BLUNT_WEAPONS,
     min_power_base=2,
-    max_power_base=3),
+    max_power_base=3)
 
 warhammer_constructor = WeaponTypeConstructor(
     name="Warhammer",
@@ -93,15 +93,15 @@ warhammer_constructor = WeaponTypeConstructor(
     equipment_type=EquipmentType.TWO_HANDED_WEAPON,
     weapon_type=WeaponType.BLUNT_WEAPONS,
     min_power_base=1,
-    max_power_base=18),
+    max_power_base=18)
 
 dagger_constructor = WeaponTypeConstructor(
     name="Dagger",
-    glyph='`',
+    glyph="`",
     equipment_type=EquipmentType.ONE_HANDED_WEAPON,
     weapon_type=WeaponType.SHORT_BLADES,
     min_power_base=2,
-    max_power_base=3),
+    max_power_base=3)
 
 shortsword_constructor = WeaponTypeConstructor(
     name="Shortsword",
@@ -109,7 +109,7 @@ shortsword_constructor = WeaponTypeConstructor(
     equipment_type=EquipmentType.ONE_HANDED_WEAPON,
     weapon_type=WeaponType.SHORT_BLADES,
     min_power_base=3,
-    max_power_base=7),
+    max_power_base=7)
 
 longsword_constructor = WeaponTypeConstructor(
     name="Longsword",
@@ -117,7 +117,7 @@ longsword_constructor = WeaponTypeConstructor(
     equipment_type=EquipmentType.ONE_HANDED_WEAPON,
     weapon_type=WeaponType.LONG_BLADES,
     min_power_base=1,
-    max_power_base=12),
+    max_power_base=12)
 
 claymore_constructor = WeaponTypeConstructor(
     name="Claymore",
@@ -125,7 +125,7 @@ claymore_constructor = WeaponTypeConstructor(
     equipment_type=EquipmentType.TWO_HANDED_WEAPON,
     weapon_type=WeaponType.LONG_BLADES,
     min_power_base=1,
-    max_power_base=15),
+    max_power_base=15)
 
 spear_constructor = WeaponTypeConstructor(
     name="Spear",
@@ -133,7 +133,7 @@ spear_constructor = WeaponTypeConstructor(
     equipment_type=EquipmentType.TWO_HANDED_WEAPON,
     weapon_type=WeaponType.SPEARS,
     min_power_base=2,
-    max_power_base=12),
+    max_power_base=12)
 
 '''Material Constructors'''
 chitin_material_constructor = WeaponMaterialConstructor(
