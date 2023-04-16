@@ -1,5 +1,5 @@
 from components.ai import HostileEnemy
-from components import consumable, equippable
+from components import consumable
 from components.equipment import Equipment
 from components.fighter import Fighter
 from components.primary_attributes import PrimaryAttributes
@@ -31,7 +31,7 @@ orc = Actor(
     equipment=Equipment(),
     fighter=Fighter(),
     primary_attributes=PrimaryAttributes(),
-    skills=Skills(),
+    skills=Skills(hand_to_hand=10),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=35)
 )
@@ -76,32 +76,4 @@ scroll_of_fireball = Item(
     color=(255, 0, 0),
     name="Scroll of Fireball",
     consumable=consumable.FireballConsumable(damage=12, radius=3)
-)
-
-dagger = Item(
-    char="/",
-    color=(0, 191, 255),
-    name="Dagger",
-    equippable=equippable.Dagger()
-)
-
-sword = Item(
-    char="/",
-    color=(0, 191, 255),
-    name="Sword",
-    equippable=equippable.Sword()
-)
-
-leather_armor = Item(
-    char="[",
-    color=(139, 69, 19),
-    name="Leather Armor",
-    equippable=equippable.LeatherArmor()
-)
-
-chain_mail = Item(
-    char="[",
-    color=(139, 69, 19),
-    name="Chain Mail",
-    equippable=equippable.ChainMail()
 )
