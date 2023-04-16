@@ -9,6 +9,7 @@ import components.birthsign
 from components import ai, fighter, equipment, primary_attributes, skills, inventory, level
 from components.birthsign import Birthsign, BIRTHSIGN_LIST
 from components.character_class import CharacterClass, CHARACTER_CLASS_LIST
+from components.creature_fighter import CreatureFighter
 from components.equipment import Equipment
 from components.equippable import Equippable
 from components.level import Level
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
     from components.consumable import Consumable
     from components.fighter import Fighter
     from components.primary_attributes import PrimaryAttributes
-    from components.skills import Skills
+    from components.skills import Skills, CreatureSkills
     from components.inventory import Inventory
     from game_map import GameMap
 
@@ -77,7 +78,7 @@ class Entity:
         self.x = x
         self.y = y
         if gamemap:
-            if hasattr(self, "parent"): # Possibly uninitialized
+            if hasattr(self, "parent"):  # Possibly uninitialized
                 if self.parent is self.gamemap:
                     self.gamemap.entities.remove(self)
             self.parent = gamemap
@@ -209,6 +210,38 @@ class Bandit(Actor):
         self.initialize_character_info()
 
         self.name = f"{race.name} {character_class.name}"
+
+
+class Creature(Actor):
+    def __init__(self,
+                 char: str,
+                 color: Tuple[int, int, int],
+                 eyesight_radius: int,
+                 name: str,
+                 ai_cls: Type[BaseAI],
+                 equipment: Equipment,
+                 fighter: CreatureFighter,
+                 primary_attributes: PrimaryAttributes,
+                 skills: CreatureSkills,
+                 inventory: Inventory,
+                 level: Level,
+                 health: int
+                 ):
+        super().__init__(
+            char=char,
+            color=color,
+            eyesight_radius=eyesight_radius,
+            name=name,
+            ai_cls=ai_cls,
+            fighter=fighter,
+            equipment=equipment,
+            primary_attributes=primary_attributes,
+            skills=skills,
+            inventory=inventory,
+            level=level
+        )
+        self.primary_attributes.max_health = health
+        self.primary_attributes.health = health
 
 
 class Item(Entity):

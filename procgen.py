@@ -35,7 +35,7 @@ def initialize_items_for_floor(
         item_chance_dict[floor] = []
 
     for item in item_list:
-        item_chance_dict[floor].append((item, 10))
+        item_chance_dict[floor].append((item, max(floor, 1)))
 
 
 item_chances: Dict[int, List[Tuple[Entity, int]]] = {}
@@ -68,7 +68,12 @@ initialize_items_for_floor(40, weapon_factories.EBONY_WEAPONS, item_chances)
 initialize_items_for_floor(45, weapon_factories.DAEDRIC_WEAPONS, item_chances)
 
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.bandit, 15)],
+    0: [(entity_factories.mudcrab, 1)],
+    2: [(entity_factories.rat, 1)],
+    4: [(entity_factories.rat, 2), (entity_factories.alit, 1)],
+    6: [(entity_factories.mudcrab, 0), (entity_factories.rat, 1), (entity_factories.guar, 1)],
+    8: [(entity_factories.guar, 2), (entity_factories.kagouti, 1)],
+    11: [(entity_factories.bandit, 1)],
 }
 
 
@@ -147,6 +152,8 @@ def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int) -
             new_monster.randomize_bandit()
         monsters.append(new_monster)
 
+    print("Item chances:")
+    print(item_chances)
     items: List[Entity] = get_entities_at_random(item_chances, number_of_items, floor_number)
 
     for chosen_entity in monsters + items:
