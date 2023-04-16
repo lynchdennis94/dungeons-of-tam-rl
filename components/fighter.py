@@ -46,15 +46,16 @@ class Fighter(BaseComponent):
 
     def armor_rating(self) -> int:
         armor_rating = 0
-        armor_rating += 0.3*self._calculate_armor_rating_from_current_piece(self.parent.equipment.cuirass)
-        armor_rating += 0.1*self._calculate_armor_rating_from_current_piece(self.parent.equipment.shield)
-        armor_rating += 0.1*self._calculate_armor_rating_from_current_piece(self.parent.equipment.helmet)
-        armor_rating += 0.1 * self._calculate_armor_rating_from_current_piece(self.parent.equipment.greaves)
-        armor_rating += 0.1 * self._calculate_armor_rating_from_current_piece(self.parent.equipment.boots)
-        armor_rating += 0.1 * self._calculate_armor_rating_from_current_piece(self.parent.equipment.right_shoulder)
-        armor_rating += 0.1 * self._calculate_armor_rating_from_current_piece(self.parent.equipment.left_shoulder)
-        armor_rating += 0.05 * self._calculate_armor_rating_from_current_piece(self.parent.equipment.right_hand_armor)
-        armor_rating += 0.05 * self._calculate_armor_rating_from_current_piece(self.parent.equipment.left_hand_armor)
+        if self.parent.equipment:
+            armor_rating += 0.3*self._calculate_armor_rating_from_current_piece(self.parent.equipment.cuirass)
+            armor_rating += 0.1*self._calculate_armor_rating_from_current_piece(self.parent.equipment.shield)
+            armor_rating += 0.1*self._calculate_armor_rating_from_current_piece(self.parent.equipment.helmet)
+            armor_rating += 0.1 * self._calculate_armor_rating_from_current_piece(self.parent.equipment.greaves)
+            armor_rating += 0.1 * self._calculate_armor_rating_from_current_piece(self.parent.equipment.boots)
+            armor_rating += 0.1 * self._calculate_armor_rating_from_current_piece(self.parent.equipment.right_shoulder)
+            armor_rating += 0.1 * self._calculate_armor_rating_from_current_piece(self.parent.equipment.left_shoulder)
+            armor_rating += 0.05 * self._calculate_armor_rating_from_current_piece(self.parent.equipment.right_hand_armor)
+            armor_rating += 0.05 * self._calculate_armor_rating_from_current_piece(self.parent.equipment.left_hand_armor)
         return armor_rating
 
     def _calculate_armor_rating_from_current_piece(self, armor_piece: Optional[Item]) -> int:
@@ -81,7 +82,6 @@ class Fighter(BaseComponent):
             critical_hit_modifier = 1  # TODO: Add in critical hit logic
         else:
             print(f"Handling unarmed damage from {self.parent.name}")
-            print(self.parent.skills.skill_map)
             weapon_damage = self.parent.skills.skill_map[SkillEnum.HAND_TO_HAND][1]  # TODO: Add in fatigue damage
             strength_modifier = 0.075
             condition_modifier = 1  # This is always 'perfect' condition

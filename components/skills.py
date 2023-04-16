@@ -126,3 +126,16 @@ class Skills(BaseComponent):
                           SkillEnum.DESTRUCTION: ("Destruction", destruction),
                           SkillEnum.MYSTICISM: ("Mysticism", mysticism),
                           SkillEnum.RESTORATION: ("Restoration", restoration)}
+
+
+class CreatureSkills(Skills):
+
+    def __init__(self,
+                 combat_skills: int = 0,
+                 magic_skills: int = 0,
+                 stealth_skills: int = 0):
+        super().__init__()
+        self.combat_skills = combat_skills
+        self.magic_skills = magic_skills
+        self.stealth_skills = stealth_skills
+

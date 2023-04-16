@@ -2,14 +2,18 @@ from __future__ import annotations
 
 import copy
 import math
+import random
 from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
 
-from components.birthsign import Birthsign
-from components.character_class import CharacterClass
+import components.birthsign
+from components import ai, fighter, equipment, primary_attributes, skills, inventory, level
+from components.birthsign import Birthsign, BIRTHSIGN_LIST
+from components.character_class import CharacterClass, CHARACTER_CLASS_LIST
+from components.creature_fighter import CreatureFighter
 from components.equipment import Equipment
 from components.equippable import Equippable
 from components.level import Level
-from components.race import Race
+from components.race import *
 from gender_types import GenderType
 from render_order import RenderOrder
 
@@ -18,7 +22,7 @@ if TYPE_CHECKING:
     from components.consumable import Consumable
     from components.fighter import Fighter
     from components.primary_attributes import PrimaryAttributes
-    from components.skills import Skills
+    from components.skills import Skills, CreatureSkills
     from components.inventory import Inventory
     from game_map import GameMap
 
@@ -74,7 +78,7 @@ class Entity:
         self.x = x
         self.y = y
         if gamemap:
-            if hasattr(self, "parent"): # Possibly uninitialized
+            if hasattr(self, "parent"):  # Possibly uninitialized
                 if self.parent is self.gamemap:
                     self.gamemap.entities.remove(self)
             self.parent = gamemap
@@ -147,6 +151,97 @@ class Actor(Entity):
     def is_alive(self) -> bool:
         """Returns True as long as this actor can perform actions."""
         return bool(self.ai)
+
+    def initialize_character_info(self):
+        self.primary_attributes.primary_attribute_map = self.race.base_primary_attributes.primary_attribute_map
+        self.character_class.set_skill_level_factor_weights()
+        self.character_class.set_attribute_bonuses()
+        self.character_class.set_skill_bonuses()
+        self.race.set_skill_bonuses()
+        self.birthsign.apply_abilities()
+        self.birthsign.add_spell()
+        self.birthsign.add_power()
+        self.color = self.race.color
+
+
+class Bandit(Actor):
+    def __init__(self,
+                 char: str = '?',
+                 eyesight_radius: int = 0,
+                 ):
+        super().__init__(
+            char=char,
+            eyesight_radius=eyesight_radius,
+            ai_cls=ai.HostileEnemy,
+            fighter=fighter.Fighter(),
+            equipment=equipment.Equipment(),
+            primary_attributes=PrimaryAttributes(),
+            skills=skills.Skills(),
+            inventory=inventory.Inventory(capacity=26),
+            level=level.Level(level_up_base=200)
+        )
+
+        print(self.primary_attributes is None)
+
+    def randomize_bandit(self):
+        rand_generator = random.Random()
+        # Pick a random gender and race
+        gender = rand_generator.choice([GenderType.FEMALE, GenderType.MALE])
+        print(gender)
+
+        if GenderType.FEMALE == gender:
+            race = rand_generator.choice(FEMALE_RACES)
+        else:
+            race = rand_generator.choice(MALE_RACES)
+
+        # Pick a random character class
+        character_class = rand_generator.choice(CHARACTER_CLASS_LIST)
+
+        # Pick a random birthsign
+        birthsign = rand_generator.choice(BIRTHSIGN_LIST)
+
+        # Initialize the character
+        self.race = race
+        self.race.parent = self
+        self.character_class = character_class
+        self.character_class.parent = self
+        self.birthsign = birthsign
+        self.birthsign.parent = self
+        self.initialize_character_info()
+
+        self.name = f"{race.name} {character_class.name}"
+
+
+class Creature(Actor):
+    def __init__(self,
+                 char: str,
+                 color: Tuple[int, int, int],
+                 eyesight_radius: int,
+                 name: str,
+                 ai_cls: Type[BaseAI],
+                 equipment: Equipment,
+                 fighter: CreatureFighter,
+                 primary_attributes: PrimaryAttributes,
+                 skills: CreatureSkills,
+                 inventory: Inventory,
+                 level: Level,
+                 health: int
+                 ):
+        super().__init__(
+            char=char,
+            color=color,
+            eyesight_radius=eyesight_radius,
+            name=name,
+            ai_cls=ai_cls,
+            fighter=fighter,
+            equipment=equipment,
+            primary_attributes=primary_attributes,
+            skills=skills,
+            inventory=inventory,
+            level=level
+        )
+        self.primary_attributes.max_health = health
+        self.primary_attributes.health = health
 
 
 class Item(Entity):

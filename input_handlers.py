@@ -15,7 +15,9 @@ from components import character_class, birthsign
 from components.primary_attributes import *
 from components.race import MALE_RACES, FEMALE_RACES
 from components.skills import SkillEnum
+from factories.weapon_factories import CHITIN_WEAPONS
 from gender_types import GenderType
+from weapon_types import WEAPON_TO_SKILL_MAP
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -606,14 +608,28 @@ class CharacterConfirmationEventHandler(CharacterCreationEventHandler):
         match event.sym:
             case tcod.event.K_y:
                 # Finalize the character creation and start the game
-                self.engine.player.primary_attributes.primary_attribute_map = self.engine.player.race.base_primary_attributes.primary_attribute_map
-                self.engine.player.character_class.set_skill_level_factor_weights()
-                self.engine.player.character_class.set_attribute_bonuses()
-                self.engine.player.character_class.set_skill_bonuses()
-                self.engine.player.race.set_skill_bonuses()
-                self.engine.player.birthsign.apply_abilities()
-                self.engine.player.birthsign.add_spell()
-                self.engine.player.birthsign.add_power()
+                self.engine.player.initialize_character_info()
+
+                # Grant the most basic weapon in a preferred combat skill
+                best_weapon_type = None
+                best_weapon_skill_value = 0
+                for weapon_type in WEAPON_TO_SKILL_MAP:
+                    skill_type = WEAPON_TO_SKILL_MAP[weapon_type]
+                    _, skill_value = self.engine.player.skills.skill_map[skill_type]
+                    if skill_value > best_weapon_skill_value:
+                        best_weapon_skill_value = skill_value
+                        best_weapon_type = weapon_type
+
+                starting_weapon = None
+                for possible_weapon in CHITIN_WEAPONS:
+                    if possible_weapon.equippable.weapon_type == best_weapon_type:
+                        starting_weapon = possible_weapon
+                        break
+
+                if starting_weapon:
+                    starting_weapon_instance = copy.deepcopy(starting_weapon)
+                    self.engine.player.inventory.items.append(starting_weapon_instance)
+                    self.engine.player.equipment.equip_to_slot("weapon", starting_weapon_instance, False)
 
                 return MainGameEventHandler(self.engine)
             case tcod.event.K_n:

@@ -115,3 +115,7 @@ class PrimaryAttributes(BaseComponent):
         self.parent.ai = None
         self.parent.render_order = RenderOrder.CORPSE
         self.parent.name = f"remains of {self.parent.name}"
+
+    def increment_attribute(self, attribute: PrimaryAttributesEnum, increment: int):
+        name, current_val = self.primary_attribute_map[attribute]
+        self.primary_attribute_map[attribute] = (name, current_val + increment)

@@ -67,8 +67,6 @@ class CharacterClass(BaseComponent):
             name, val = self.parent.skills.skill_map[skill]
             self.parent.skills.skill_map[skill] = (name, val + 5)
 
-        print(self.parent.skills.skill_map)
-
     def set_attribute_bonuses(self):
         for attribute in self.favored_attributes_list:
             name, val = self.parent.primary_attributes.primary_attribute_map[attribute]

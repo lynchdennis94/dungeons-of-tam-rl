@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import copy
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Tuple
 
+import colors
 from components.base_component import BaseComponent
 from components.primary_attributes import PrimaryAttributes
 from components.skills import Skills
@@ -16,10 +17,12 @@ class Race(BaseComponent):
 
     def __init__(self,
                  name: str,
+                 color: Tuple,
                  base_primary_attributes: PrimaryAttributes,
                  base_skills: Skills,
                  magicka_multiplier: float = 0.0):  # TODO: Add resistances, and racial descriptions
         self.name = name
+        self.color = color
         self.base_primary_attributes = base_primary_attributes
         self.base_skills = base_skills
         self.magicka_multiplier = magicka_multiplier
@@ -33,6 +36,7 @@ class Race(BaseComponent):
 
 ARGONIAN_MALE = Race(
     name="Argonian",
+    color=colors.ARGONIAN_COLOR,
     base_primary_attributes=PrimaryAttributes(
         willpower=30, agility=50, speed=50, endurance=30, personality=30
     ),
@@ -42,6 +46,7 @@ ARGONIAN_MALE = Race(
 
 ARGONIAN_FEMALE = Race(
     name="Argonian",
+    color=colors.ARGONIAN_COLOR,
     base_primary_attributes=PrimaryAttributes(
         intelligence=50, endurance=30, personality=30
     ),
@@ -51,6 +56,7 @@ ARGONIAN_FEMALE = Race(
 
 BRETON_MALE = Race(
     name="Breton",
+    color=colors.BRETON_COLOR,
     base_primary_attributes=PrimaryAttributes(
         intelligence=50, willpower=50, agility=30, speed=30, endurance=30
     ),
@@ -61,6 +67,7 @@ BRETON_MALE = Race(
 
 BRETON_FEMALE = Race(
     name="Breton",
+    color=colors.BRETON_COLOR,
     base_primary_attributes=PrimaryAttributes(
         strength=30, intelligence=50, willpower=50, agility=30, endurance=30
     ),
@@ -71,6 +78,7 @@ BRETON_FEMALE = Race(
 
 DUNMER_MALE = Race(
     name="Dunmer",
+    color=colors.DUNMER_COLOR,
     base_primary_attributes=PrimaryAttributes(
         willpower=30, speed=50, personality=30
     ),
@@ -80,6 +88,7 @@ DUNMER_MALE = Race(
 
 DUNMER_FEMALE = Race(
     name="Dunmer",
+    color=colors.DUNMER_COLOR,
     base_primary_attributes=PrimaryAttributes(
         willpower=30, speed=50, endurance=30
     ),
@@ -89,6 +98,7 @@ DUNMER_FEMALE = Race(
 
 ALTMER_MALE = Race(
     name="Altmer",
+    color=colors.ALTMER_COLOR,
     base_primary_attributes=PrimaryAttributes(
         strength=30, intelligence=50, speed=30
     ),
@@ -99,6 +109,7 @@ ALTMER_MALE = Race(
 
 ALTMER_FEMALE = Race(
     name="Altmer",
+    color=colors.ALTMER_COLOR,
     base_primary_attributes=PrimaryAttributes(
         strength=30, intelligence=50, endurance=30
     ),
@@ -109,6 +120,7 @@ ALTMER_FEMALE = Race(
 
 IMPERIAL_MALE = Race(
     name="Imperial",
+    color=colors.IMPERIAL_COLOR,
     base_primary_attributes=PrimaryAttributes(
         willpower=30, agility=30, personality=50
     ),
@@ -118,6 +130,7 @@ IMPERIAL_MALE = Race(
 
 IMPERIAL_FEMALE = Race(
     name="Imperial",
+    color=colors.IMPERIAL_COLOR,
     base_primary_attributes=PrimaryAttributes(
         agility=30, speed=30, personality=50
     ),
@@ -127,6 +140,7 @@ IMPERIAL_FEMALE = Race(
 
 KHAJIIT_MALE = Race(
     name="Khajiit",
+    color=colors.KHAJIIT_COLOR,
     base_primary_attributes=PrimaryAttributes(
         willpower=30, agility=50, endurance=30
     ),
@@ -136,6 +150,7 @@ KHAJIIT_MALE = Race(
 
 KHAJIIT_FEMALE = Race(
     name="Khajiit",
+    color=colors.KHAJIIT_COLOR,
     base_primary_attributes=PrimaryAttributes(
         strength=30, willpower=30, agility=50
     ),
@@ -145,6 +160,7 @@ KHAJIIT_FEMALE = Race(
 
 NORD_MALE = Race(
     name="Nord",
+    color=colors.NORD_COLOR,
     base_primary_attributes=PrimaryAttributes(
         strength=50, intelligence=30, agility=30, endurance=50, personality=30
     ),
@@ -154,6 +170,7 @@ NORD_MALE = Race(
 
 NORD_FEMALE = Race(
     name="Nord",
+    color=colors.NORD_COLOR,
     base_primary_attributes=PrimaryAttributes(
         strength=50, intelligence=30, willpower=50, agility=30, personality=30
     ),
@@ -163,6 +180,7 @@ NORD_FEMALE = Race(
 
 ORSIMER_MALE = Race(
     name="Orsimer",
+    color=colors.ORSIMER_COLOR,
     base_primary_attributes=PrimaryAttributes(
         strength=45, intelligence=30, willpower=50, agility=35, speed=30, endurance=50, personality=30
     ),
@@ -172,6 +190,7 @@ ORSIMER_MALE = Race(
 
 ORSIMER_FEMALE = Race(
     name="Orsimer",
+    color=colors.ORSIMER_COLOR,
     base_primary_attributes=PrimaryAttributes(
         strength=45, willpower=45, agility=35, speed=30, endurance=50, personality=25
     ),
@@ -181,6 +200,7 @@ ORSIMER_FEMALE = Race(
 
 REDGUARD_MALE = Race(
     name="Redguard",
+    color=colors.REDGUARD_COLOR,
     base_primary_attributes=PrimaryAttributes(
         strength=50, intelligence=30, willpower=30, endurance=50, personality=30
     ),
@@ -190,6 +210,7 @@ REDGUARD_MALE = Race(
 
 REDGUARD_FEMALE = Race(
     name="Redguard",
+    color=colors.REDGUARD_COLOR,
     base_primary_attributes=PrimaryAttributes(
         intelligence=30, willpower=30, endurance=50
     ),
@@ -199,6 +220,7 @@ REDGUARD_FEMALE = Race(
 
 BOSMER_MALE = Race(
     name="Bosmer",
+    color=colors.BOSMER_COLOR,
     base_primary_attributes=PrimaryAttributes(
         strength=30, willpower=30, agility=50, speed=50, endurance=30
     ),
@@ -208,6 +230,7 @@ BOSMER_MALE = Race(
 
 BOSMER_FEMALE = Race(
     name="Bosmer",
+    color=colors.BOSMER_COLOR,
     base_primary_attributes=PrimaryAttributes(
         strength=30, willpower=30, agility=50, speed=50, endurance=30
     ),
