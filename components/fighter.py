@@ -81,7 +81,6 @@ class Fighter(BaseComponent):
             critical_hit_modifier = 1  # TODO: Add in critical hit logic
         else:
             print(f"Handling unarmed damage from {self.parent.name}")
-            print(self.parent.skills.skill_map)
             weapon_damage = self.parent.skills.skill_map[SkillEnum.HAND_TO_HAND][1]  # TODO: Add in fatigue damage
             strength_modifier = 0.075
             condition_modifier = 1  # This is always 'perfect' condition

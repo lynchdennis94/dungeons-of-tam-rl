@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import random
 from typing import Dict, Iterator, List, Tuple, TYPE_CHECKING
 
@@ -7,6 +8,7 @@ import tcod
 
 from factories import entity_factories, weapon_factories, armor_factories
 from game_map import GameMap
+from entity import Bandit
 import tile_types
 
 if TYPE_CHECKING:
@@ -28,7 +30,7 @@ max_monsters_by_floor = [
 def initialize_items_for_floor(
         floor: int,
         item_list: List[Item],
-        item_chance_dict: Dict[int,List[Tuple[Entity, int]]] ):
+        item_chance_dict: Dict[int, List[Tuple[Entity, int]]]):
     if floor not in item_chances:
         item_chance_dict[floor] = []
 
@@ -65,14 +67,9 @@ initialize_items_for_floor(35, weapon_factories.GLASS_WEAPONS, item_chances)
 initialize_items_for_floor(40, weapon_factories.EBONY_WEAPONS, item_chances)
 initialize_items_for_floor(45, weapon_factories.DAEDRIC_WEAPONS, item_chances)
 
-
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.orc, 1)],
-    3: [(entity_factories.troll, 15)],
-    5: [(entity_factories.troll, 30)],
-    7: [(entity_factories.troll, 60)],
+    0: [(entity_factories.bandit, 15)],
 }
-
 
 
 def get_max_value_for_floor(weighted_chances_by_floor: List[Tuple[int, int]], floor: int) -> int:
@@ -110,6 +107,7 @@ def get_entities_at_random(
 
     return chosen_entities
 
+
 class RectangularRoom:
     def __init__(self, x: int, y: int, width: int, height: int):
         self.x1 = x
@@ -141,7 +139,14 @@ class RectangularRoom:
 def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int) -> None:
     number_of_monsters = random.randint(0, get_max_value_for_floor(max_monsters_by_floor, floor_number))
     number_of_items = random.randint(0, get_max_value_for_floor(max_items_by_floor, floor_number))
-    monsters: List[Entity] = get_entities_at_random(enemy_chances, number_of_monsters, floor_number)
+    monster_templates: List[Entity] = get_entities_at_random(enemy_chances, number_of_monsters, floor_number)
+    monsters = []
+    for monster in monster_templates:
+        new_monster = copy.deepcopy(monster)
+        if isinstance(new_monster, Bandit):
+            new_monster.randomize_bandit()
+        monsters.append(new_monster)
+
     items: List[Entity] = get_entities_at_random(item_chances, number_of_items, floor_number)
 
     for chosen_entity in monsters + items:
@@ -208,7 +213,6 @@ def generate_dungeon(
         place_entities(new_room, dungeon, engine.game_world.current_floor)
 
         dungeon.tiles[center_of_last_room] = tile_types.down_stairs
-
 
         rooms.append(new_room)
     dungeon.downstairs_location = center_of_last_room

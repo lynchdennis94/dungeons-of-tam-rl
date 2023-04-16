@@ -606,14 +606,7 @@ class CharacterConfirmationEventHandler(CharacterCreationEventHandler):
         match event.sym:
             case tcod.event.K_y:
                 # Finalize the character creation and start the game
-                self.engine.player.primary_attributes.primary_attribute_map = self.engine.player.race.base_primary_attributes.primary_attribute_map
-                self.engine.player.character_class.set_skill_level_factor_weights()
-                self.engine.player.character_class.set_attribute_bonuses()
-                self.engine.player.character_class.set_skill_bonuses()
-                self.engine.player.race.set_skill_bonuses()
-                self.engine.player.birthsign.apply_abilities()
-                self.engine.player.birthsign.add_spell()
-                self.engine.player.birthsign.add_power()
+                self.engine.player.initialize_character_info()
 
                 return MainGameEventHandler(self.engine)
             case tcod.event.K_n:

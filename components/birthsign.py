@@ -62,8 +62,8 @@ class LadyBirthsign(Birthsign):
         super().__init__("The Lady")
 
     def apply_abilities(self):
-        self.parent.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.PERSONALITY][1] += 25
-        self.parent.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.ENDURANCE][1] += 25
+        self.parent.primary_attributes.increment_attribute(PrimaryAttributesEnum.PERSONALITY, 25)
+        self.parent.primary_attributes.increment_attribute(PrimaryAttributesEnum.ENDURANCE, 25)
 
 
 class SteedBirthsign(Birthsign):
@@ -71,7 +71,7 @@ class SteedBirthsign(Birthsign):
         super().__init__("The Steed")
 
     def apply_abilities(self):
-        self.parent.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.SPEED][1] += 25
+        self.parent.primary_attributes.increment_attribute(PrimaryAttributesEnum.SPEED, 25)
 
 
 class LordBirthsign(Birthsign):
@@ -119,7 +119,7 @@ class LoverBirthsign(Birthsign):
         super().__init__("The Lover")
 
     def apply_abilities(self):
-        self.parent.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.AGILITY][1] += 25
+        self.parent.primary_attributes.increment_attribute(PrimaryAttributesEnum.AGILITY, 25)
 
     def add_power(self):
         pass  # TODO: Add power
