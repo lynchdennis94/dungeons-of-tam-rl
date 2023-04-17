@@ -22,7 +22,7 @@ player = Actor(
     primary_attributes=PrimaryAttributes(),
     skills=Skills(),
     inventory=Inventory(capacity=26),
-    level=Level(level_up_base=200)
+    level=Level(can_level_up=True)
 )
 
 bandit = Bandit(
@@ -41,7 +41,7 @@ rat = Creature(
         primary_attributes=PrimaryAttributes(),
         skills=CreatureSkills(combat_skills=25),
         inventory=Inventory(capacity=0),
-        level=Level(xp_given=20),
+        level=Level(),
         health=23,
         )
 
@@ -56,7 +56,7 @@ mudcrab = Creature(
         primary_attributes=PrimaryAttributes(),
         skills=CreatureSkills(combat_skills=20),
         inventory=Inventory(capacity=0),
-        level=Level(xp_given=20),
+        level=Level(),
         health=15,
         )
 
@@ -71,7 +71,7 @@ kagouti = Creature(
         primary_attributes=PrimaryAttributes(),
         skills=CreatureSkills(combat_skills=40),
         inventory=Inventory(capacity=0),
-        level=Level(xp_given=20),
+        level=Level(),
         health=45,
         )
 
@@ -86,7 +86,7 @@ guar = Creature(
         primary_attributes=PrimaryAttributes(),
         skills=CreatureSkills(combat_skills=30),
         inventory=Inventory(capacity=0),
-        level=Level(xp_given=20),
+        level=Level(),
         health=38,
         )
 
@@ -101,7 +101,7 @@ alit = Creature(
         primary_attributes=PrimaryAttributes(),
         skills=CreatureSkills(combat_skills=30),
         inventory=Inventory(capacity=0),
-        level=Level(xp_given=20),
+        level=Level(),
         health=30,
         )
 

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 
 from armor_type import ARMOR_TO_SKILL_MAP
 from components.base_component import BaseComponent
+from components.equipment import ARMOR_SLOTS
 from components.primary_attributes import PrimaryAttributesEnum
 from components.skills import SkillEnum
 from weapon_types import WeaponType, WEAPON_TO_SKILL_MAP
@@ -72,9 +73,11 @@ class Fighter(BaseComponent):
         return base_armor_rating * armor_skill_value * weight
 
     def damage(self, target_armor_rating: int) -> int:
+        skill_associated_with_attack = SkillEnum.HAND_TO_HAND
         if self.parent.equipment.weapon and self.parent.equipment.weapon.equippable.weapon_type:
             print("Handling weapon damage")
             equippable_weapon = self.parent.equipment.weapon.equippable
+            skill_associated_with_attack = WEAPON_TO_SKILL_MAP[equippable_weapon.weapon_type]
             weapon_damage = self.rand_generator.randint(equippable_weapon.min_power, equippable_weapon.max_power)
             strength_modifier = (self.parent.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.STRENGTH][
                                      1] + 50) / 100
@@ -91,4 +94,30 @@ class Fighter(BaseComponent):
         print(f"Strength modifier: {strength_modifier}")
         unaltered_damage = weapon_damage * strength_modifier * condition_modifier * critical_hit_modifier
         damage_reduction = min(1 + target_armor_rating / unaltered_damage, 4)
+
+        # Increase the 'skill' for the successful damage
+        if self.parent.level.can_level_up:
+            self.parent.level.increase_skill(skill_associated_with_attack, 1.0)
+
         return math.floor(unaltered_damage / damage_reduction)
+
+    def take_damage(self, damage: int):
+        self.parent.primary_attributes.health -= damage
+
+        if damage > 0:
+            # Pick a random armor slot to absorb the damage
+            damaged_armor_slot = self.rand_generator.choice(ARMOR_SLOTS)
+            equipment_damaged = getattr(self.parent.equipment, damaged_armor_slot)
+            if equipment_damaged is not None:
+                # TODO: work on conditioning impact
+
+                if self.parent.level.can_level_up:
+                    # Something was equipped, increase that skill by a point
+                    skill_to_increase = ARMOR_TO_SKILL_MAP[equipment_damaged.equippable.armor_type]
+                    self.parent.level.increase_skill(skill_to_increase, 1.0)
+            elif self.parent.level.can_level_up:
+                # We damaged an unarmored slot
+                self.parent.level.increase_skill(SkillEnum.UNARMORED, 1.0)
+
+
+

@@ -269,7 +269,7 @@ class CharacterScreenEventHandler(AskUserEventHandler):
             f"Race: {self.engine.player.race.name}",
             f"Class: {self.engine.player.character_class.name}",
             "",
-            f"Level: {self.engine.player.level.current_level}",
+            f"Level: {self.engine.player.level.current_level} ({self.engine.player.level.total_major_minor_skill_increases} / 10)",
             f"Health: {self.engine.player.primary_attributes.health} / {self.engine.player.primary_attributes.max_health}",
             f"Magicka: {self.engine.player.primary_attributes.magicka} / {self.engine.player.primary_attributes.max_magicka}",
             f"Fatigue: {self.engine.player.primary_attributes.fatigue} / {self.engine.player.primary_attributes.max_fatigue}",
@@ -683,69 +683,181 @@ class CharacterConfirmationEventHandler(CharacterCreationEventHandler):
 class LevelUpEventHandler(AskUserEventHandler):
     TITLE = "Level Up"
 
+    def __init__(self, engine: Engine):
+        super().__init__(engine)
+
+        # Set up the messages for leveling up
+        self.level_up_message_map = {
+            2: "You realize that all your life you have\n"
+               "been coasting along as if you were in a dream.\n"
+               "Suddenly, facing the trials of the last few\n"
+               "days, you have come alive.",
+            3: "You realize that you are catching on\n"
+               "to the secret of success. It's just a\n"
+               "matter of concentration.",
+            4: "It's all suddenly obvious to you. You\n"
+               "just have to concentrate. All the \n"
+               "energy and time you've wasted -- it's a\n"
+               "sin. But without the experience you've\n"
+               "gained, taking risks, taking responsibility\n"
+               "for failure, how could you have understood?",
+            5: "Everything you do is just a bit easier,\n"
+               "more instinctive, more satisfying. It\n"
+               "is as though you had suddenly developed\n"
+               "keen senses and instincts.",
+            6: "You sense yourself more aware,\n"
+               "more open to new ideas. You've\n"
+               "learned a lot about this place. It's\n"
+               "hard to believe how ignorant you\n"
+               "were -- but now you have so much\n"
+               "more to learn.",
+            7: "You resolve to continue pushing\n"
+               "yourself. Perhaps there's more\n"
+               "to you than you thought.",
+            8: "The secret does seem to be hard work,\n"
+               "yes, but it's also a kind of blind\n"
+               "passion, an inspiration.",
+            9: "Everything you do is just a bit\n"
+               "easier, more instinctive, more satisfying.\n"
+               "It is as though you had suddenly developed\n"
+               "keen senses and instincts.",
+            10: "You woke today with a new sense of\n"
+                "purpose. You're no longer afraid of\n"
+                "failure. Failure is just an\n"
+                "opportunity to learn something new.",
+            11: "Being smart doesn't hurt.\n"
+                "And a little luck now and\n"
+                "then is nice. But the key is\n"
+                "patience and hard work. And when\n"
+                "it pays off, it's SWEET!",
+            12: "You can't believe how easy it is.\n"
+                "You just have to go... a little crazy.\n"
+                "And then, suddenly, it all makes sense,\n"
+                "and everything you do turns to gold.",
+            13: "It's the most amazing thing. Yesterday\n"
+                "it was hard, and today it is easy. Just a\n"
+                "good night's sleep, and yesterday's\n"
+                "mysteries are today's masteries.",
+            14: "Today you wake up, full of energy and\n"
+                "ideas, and you know, somehow, that\n"
+                "overnight everything has changed.\n"
+                "What a difference a day makes.",
+            15: "Today you suddenly realized the life\n"
+                "you've been living, the punishment your\n"
+                "body has taken -- there are limits to\n"
+                "what the body can do, and perhaps you\n"
+                "have reached them. You've wondered what\n"
+                "it's like to grow old. Well, now you know.",
+            16: "You've been trying too hard, thinking\n"
+                "too much. Relax. Trust your instincts.\n"
+                "Just be yourself. Do the little things,\n"
+                "and the big things take care of themselves.",
+            17: "Life isn't over. You can still get\n"
+                "smarter, or cleverer, or more experienced,\n"
+                "or meaner -- but your body and soul just\n"
+                "aren't going to get any younger.",
+            18: "The challenge now is to stay at the peak\n"
+                "as long as you can. You may be as strong\n"
+                "today as any mortal who has ever walked\n"
+                "the earth, but there's always someone\n"
+                "younger, a new challenger.",
+            19: "You're really good. Maybe the best.\n"
+                "And that's why it's so hard to get better.\n"
+                "But you just keep trying, because that's\n"
+                "the way you are.",
+            20: "You'll never be better than you are today.\n"
+                "If you are lucky, by superhuman effort,\n"
+                "you can avoid slipping backwards for a while.\n"
+                "But sooner or later, you're going to lose a\n"
+                "step, or drop a beat, or miss a\n"
+                "detail -- and you'll be gone forever.",
+            21: "The results of hard work and dedication\n"
+                "always look like luck to saps.\n"
+                "But you know you've earned every\n"
+                "ounce of your success."
+        }
+
+        self.selected_attribute_dict: Dict = {}
+        for attribute in PrimaryAttributesEnum:
+            self.selected_attribute_dict[attribute] = False
+
+        self.selected_attribute_count = 0
+
     def on_render(self, console: tcod.Console) -> None:
         super().on_render(console)
 
-        if self.engine.player.x <= 30:
-            x = 40
-        else:
-            x = 0
+        x = 5
+        y = 5
+        width = 70
 
         console.draw_frame(
             x=x,
-            y=0,
-            width=35,
-            height=8,
+            y=y,
+            width=70,
+            height=20,
             title=self.TITLE,
             clear=True,
             fg=(255, 255, 255),
             bg=(0, 0, 0)
         )
 
-        console.print(x=x + 1, y=1, string="Congratulations! You level up!")
-        console.print(x=x + 1, y=2, string="Select an attribute to increase")
+        next_level_number = self.engine.player.level.current_level + 1
 
-        console.print(
-            x=x + 1,
-            y=4,
-            string=f"a) Constitution (+20 HP, from {self.engine.player.primary_attributes.max_health})"
-        )
+        console.print(x=x+1, y=1, string=f"Welcome to level {next_level_number}!")
+        console.print(x=x+1, y=2, string=self.get_level_up_message(next_level_number))
 
-        console.print(
-            x=x + 1,
-            y=5,
-            string=f"b) Strength:{self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.STRENGTH][1] + 1} "
-                   f"(+{(self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.STRENGTH][1] + 1 - 10) // 2} to attack)"
-        )
+        y_index = 10
+        key = 0
+        for primary_attribute_enum in PrimaryAttributesEnum:
+            attribute_name = primary_attribute_enum.name.lower().capitalize()
+            attribute_increase = self.engine.player.level.get_multiplier_for_attribute(primary_attribute_enum)
+            current_attribute_value = self.engine.player.primary_attributes.primary_attribute_map[primary_attribute_enum][1]
+            item_key = chr(ord("a") + key)
+            attribute_already_selected = self.selected_attribute_dict[primary_attribute_enum]
 
-        console.print(
-            x=x + 1,
-            y=6,
-            string=f"c) Agility:{self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.AGILITY][1] + 1} "
-                   f"(+{(self.engine.player.primary_attributes.primary_attribute_map[PrimaryAttributesEnum.AGILITY][1] + 1 - 10) // 2} to defense)"
-        )
+            level_up_message = f"{item_key}) {attribute_name} (+{attribute_increase}, from {current_attribute_value})"
+            if attribute_already_selected:
+                level_up_message += " *"
+
+            console.print(
+                x=x + 1,
+                y=y_index,
+                string=level_up_message
+            )
+
+            y_index += 1
+            key += 1
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         player = self.engine.player
         key = event.sym
         index = key - tcod.event.K_a
 
-        match index:
-            case 0:
-                player.level.increase_max_health()
-            case 1:
-                player.level.increase_power()
-            case 2:
-                player.level.increase_defense()
-            case _:
-                self.engine.message_log.add_message("Invalid entry.", colors.INVALID)
-                return None
+        attribute_selected = PrimaryAttributesEnum(index)
+        if self.selected_attribute_dict[attribute_selected] is True:
+            # De-select the attribute
+            self.selected_attribute_dict[attribute_selected] = False
+            self.selected_attribute_count -= 1
+        else:
+            self.selected_attribute_dict[attribute_selected] = True
+            self.selected_attribute_count += 1
 
-        return super().ev_keydown(event)
+        if self.selected_attribute_count == 3:
+            # level up
+            attributes_to_increase = []
+            for attribute in self.selected_attribute_dict:
+                if self.selected_attribute_dict[attribute]:
+                    attributes_to_increase.append(attribute)
+            player.level.increase_level(attributes_to_increase)
+            return super().ev_keydown(event)
 
     def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Optional[ActionOrHandler]:
         """Don't allow the player to click to exit the menu, like normal"""
         return None
+
+    def get_level_up_message(self, level: int) -> str:
+        level_for_map = min(level, 21)
+        return self.level_up_message_map[level_for_map]
 
 
 class InventoryEventHandler(AskUserEventHandler):

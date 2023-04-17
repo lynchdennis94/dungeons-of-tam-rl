@@ -1,5 +1,5 @@
 from __future__ import annotations
-from enum import auto, Enum
+from enum import Enum
 
 from random import Random
 from typing import TYPE_CHECKING, Dict
@@ -13,14 +13,14 @@ if TYPE_CHECKING:
 
 
 class PrimaryAttributesEnum(Enum):
-    STRENGTH = auto()
-    INTELLIGENCE = auto()
-    WILLPOWER = auto()
-    AGILITY = auto()
-    SPEED = auto()
-    ENDURANCE = auto()
-    PERSONALITY = auto()
-    LUCK = auto()
+    STRENGTH = 0
+    INTELLIGENCE = 1
+    WILLPOWER = 2
+    AGILITY = 3
+    SPEED = 4
+    ENDURANCE = 5
+    PERSONALITY = 6
+    LUCK = 7
 
 
 class PrimaryAttributes(BaseComponent):
@@ -107,7 +107,6 @@ class PrimaryAttributes(BaseComponent):
         else:
             death_message = f"{self.parent.name} is dead!"
             self.engine.message_log.add_message(death_message, colors.ENEMY_DIE)
-            self.engine.player.level.add_xp(self.parent.level.xp_given)
 
         self.parent.char = "%"
         self.parent.color = (191, 0, 0)
