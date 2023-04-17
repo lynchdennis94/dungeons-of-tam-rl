@@ -157,8 +157,6 @@ def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int) -
             new_monster.randomize_bandit()
         monsters.append(new_monster)
 
-    print(item_chances[0])
-    print(item_chances[2])
     items: List[Entity] = get_entities_at_random(item_chances, number_of_items, floor_number)
 
     for chosen_entity in monsters + items:

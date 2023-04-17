@@ -5,6 +5,7 @@ from enum import auto, Enum
 
 from typing import TYPE_CHECKING
 from components.base_component import BaseComponent
+from components.primary_attributes import PrimaryAttributesEnum
 
 if TYPE_CHECKING:
     from entity import Actor
@@ -75,6 +76,36 @@ STEALTH_SKILLS = [
     copy.deepcopy(SkillEnum.SNEAK),
     copy.deepcopy(SkillEnum.SPEECHCRAFT)
 ]
+
+SKILL_TO_ATTRIBUTE_MAPPING = {
+    SkillEnum.HEAVY_ARMOR: PrimaryAttributesEnum.ENDURANCE,
+    SkillEnum.MEDIUM_ARMOR: PrimaryAttributesEnum.ENDURANCE,
+    SkillEnum.SPEAR: PrimaryAttributesEnum.ENDURANCE,
+    SkillEnum.ACROBATICS: PrimaryAttributesEnum.STRENGTH,
+    SkillEnum.ARMORER: PrimaryAttributesEnum.STRENGTH,
+    SkillEnum.AXE: PrimaryAttributesEnum.STRENGTH,
+    SkillEnum.BLUNT_WEAPON: PrimaryAttributesEnum.STRENGTH,
+    SkillEnum.LONG_BLADE: PrimaryAttributesEnum.STRENGTH,
+    SkillEnum.BLOCK: PrimaryAttributesEnum.AGILITY,
+    SkillEnum.LIGHT_ARMOR: PrimaryAttributesEnum.AGILITY,
+    SkillEnum.MARKSMAN: PrimaryAttributesEnum.AGILITY,
+    SkillEnum.SNEAK: PrimaryAttributesEnum.AGILITY,
+    SkillEnum.ATHLETICS: PrimaryAttributesEnum.SPEED,
+    SkillEnum.HAND_TO_HAND: PrimaryAttributesEnum.SPEED,
+    SkillEnum.SHORT_BLADE: PrimaryAttributesEnum.SPEED,
+    SkillEnum.UNARMORED: PrimaryAttributesEnum.SPEED,
+    SkillEnum.ILLUSION: PrimaryAttributesEnum.PERSONALITY,
+    SkillEnum.MERCANTILE: PrimaryAttributesEnum.PERSONALITY,
+    SkillEnum.SPEECHCRAFT: PrimaryAttributesEnum.PERSONALITY,
+    SkillEnum.ALCHEMY: PrimaryAttributesEnum.INTELLIGENCE,
+    SkillEnum.CONJURATION: PrimaryAttributesEnum.INTELLIGENCE,
+    SkillEnum.ENCHANT: PrimaryAttributesEnum.INTELLIGENCE,
+    SkillEnum.SECURITY: PrimaryAttributesEnum.INTELLIGENCE,
+    SkillEnum.ALTERATION: PrimaryAttributesEnum.WILLPOWER,
+    SkillEnum.DESTRUCTION: PrimaryAttributesEnum.WILLPOWER,
+    SkillEnum.MYSTICISM: PrimaryAttributesEnum.WILLPOWER,
+    SkillEnum.RESTORATION: PrimaryAttributesEnum.WILLPOWER
+}
 
 
 class Skills(BaseComponent):

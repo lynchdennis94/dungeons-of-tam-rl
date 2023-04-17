@@ -178,7 +178,7 @@ class Bandit(Actor):
             primary_attributes=PrimaryAttributes(),
             skills=skills.Skills(),
             inventory=inventory.Inventory(capacity=26),
-            level=level.Level(level_up_base=200)
+            level=level.Level()
         )
 
         print(self.primary_attributes is None)

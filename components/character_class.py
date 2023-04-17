@@ -38,13 +38,15 @@ class CharacterClass(BaseComponent):
         for skill in SkillEnum:
             self.skill_level_factors[skill] = 1.25
 
-        # Overwrite the major, minor, and specialized skills
+        # Set the weights for major and minor skills
         for skill in self.minor_skills_list:
             self.skill_level_factors[skill] = 1.0
-        for skill in self.specialization_skills_list:
-            self.skill_level_factors[skill] = 0.8
         for skill in self.major_skills_list:
             self.skill_level_factors[skill] = 0.75
+
+        # Add a specialization multiplier
+        for skill in self.specialization_skills_list:
+            self.skill_level_factors[skill] *= 0.8
 
     def set_skill_bonuses(self):
         # Set misc skills (+5 bonus)
