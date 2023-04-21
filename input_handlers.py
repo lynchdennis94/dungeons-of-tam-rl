@@ -12,6 +12,7 @@ from actions import Action, BumpAction, DropItemAction, PickupAction, WaitAction
 import colors
 import exceptions
 from components import character_class, birthsign
+from components.equipment import *
 from components.primary_attributes import *
 from components.race import MALE_RACES, FEMALE_RACES
 from components.skills import SkillEnum
@@ -207,7 +208,6 @@ def _format_skill_table_line(skill_map: Dict,
                              minor_skill_list: List[SkillEnum],
                              misc_skill_list: List[SkillEnum],
                              current_index: int):
-
     if current_index < len(major_skill_list):
         major_skill_name, major_skill_value = skill_map[major_skill_list[current_index]]
         major_skill_line = " |" + "{:<18}".format(major_skill_name) + "{:<3}".format(major_skill_value)
@@ -279,7 +279,8 @@ class CharacterScreenEventHandler(AskUserEventHandler):
             f"{speed_string} {endurance_string} {willpower_string} {luck_string}",
             "",
             " ================================================================== ",
-            "{:<23}".format(" |Major Skills") + "{:<22}".format("|Minor Skills") + "{:<21}".format("|Misc Skills") + "|",
+            "{:<23}".format(" |Major Skills") + "{:<22}".format("|Minor Skills") + "{:<21}".format(
+                "|Misc Skills") + "|",
             " ================================================================== "
         ]
 
@@ -803,15 +804,16 @@ class LevelUpEventHandler(AskUserEventHandler):
 
         next_level_number = self.engine.player.level.current_level + 1
 
-        console.print(x=x+1, y=1, string=f"Welcome to level {next_level_number}!")
-        console.print(x=x+1, y=2, string=self.get_level_up_message(next_level_number))
+        console.print(x=x + 1, y=1, string=f"Welcome to level {next_level_number}!")
+        console.print(x=x + 1, y=2, string=self.get_level_up_message(next_level_number))
 
         y_index = 10
         key = 0
         for primary_attribute_enum in PrimaryAttributesEnum:
             attribute_name = primary_attribute_enum.name.lower().capitalize()
             attribute_increase = self.engine.player.level.get_multiplier_for_attribute(primary_attribute_enum)
-            current_attribute_value = self.engine.player.primary_attributes.primary_attribute_map[primary_attribute_enum][1]
+            current_attribute_value = \
+            self.engine.player.primary_attributes.primary_attribute_map[primary_attribute_enum][1]
             item_key = chr(ord("a") + key)
             attribute_already_selected = self.selected_attribute_dict[primary_attribute_enum]
 
@@ -868,29 +870,27 @@ class InventoryEventHandler(AskUserEventHandler):
 
     TITLE = "<missing title>"
 
+    def __init__(self, engine: Engine, inventory_items: List[Item] = None):
+        super().__init__(engine)
+        self.inventory_page = 0
+        self.items_per_page = 20
+        if inventory_items is None:
+            self.inventory_items = self.engine.player.inventory.items
+        else:
+            self.inventory_items = inventory_items
+        self.inventory_item_len = len(self.inventory_items)
+
     def on_render(self, console: tcod.Console) -> None:
         """Render an inventory menu, which displays the items in the inventory, and the letter to select them.
         Will move to a different position based on where the player is located, so the player can always see where
         they are.
         """
         super().on_render(console)
-        number_of_items_in_inventory = len(self.engine.player.inventory.items)
 
-        height = number_of_items_in_inventory + 2
-
-        if height <= 3:
-            height = 3
-
-        half_of_map_width = int(self.engine.game_map.gamemap.width / 2)
-
-        if self.engine.player.x <= half_of_map_width:
-            x = half_of_map_width + 10
-        else:
-            x = 0
-
-        y = 0
-
-        width = len(self.TITLE) + 4
+        height = 30
+        x = 5
+        y = 5
+        width = 70
 
         console.draw_frame(
             x=x,
@@ -903,8 +903,9 @@ class InventoryEventHandler(AskUserEventHandler):
             bg=(0, 0, 0)
         )
 
-        if number_of_items_in_inventory > 0:
-            for i, item in enumerate(self.engine.player.inventory.items):
+        if self.inventory_item_len > 0:
+            start_index, end_index = self.get_item_start_and_end_index()
+            for i, item in enumerate(self.inventory_items[start_index:end_index]):
                 item_key = chr(ord("a") + i)
                 is_equipped = self.engine.player.equipment.item_is_equipped(item)
                 item_string = f"({item_key}) {item.name}"
@@ -916,22 +917,135 @@ class InventoryEventHandler(AskUserEventHandler):
         else:
             console.print(x + 1, y + 1, "(Empty)")
 
-    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
-        player = self.engine.player
-        key = event.sym
-        index = key - tcod.event.K_a
+        if self.inventory_item_len > (self.inventory_page + 1) * self.items_per_page:
+            console.print(x + 50, height + 3, "3) Next Page")
+        if self.inventory_page > 0:
+            console.print(x + 1, height + 3, "1) Previous Page")
+        console.print(x + 25, height + 3, "2) Equipment")
 
-        if 0 <= index <= 26:
-            try:
-                selected_item = player.inventory.items[index]
-            except IndexError:
-                self.engine.message_log.add_message("Invalid entry", colors.INVALID)
-                return None
-            return self.on_item_selected(selected_item)
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        key = event.sym
+        min_item_index = self.inventory_page*self.items_per_page
+        max_item_index = (self.inventory_page + 1) * self.items_per_page - 1
+        if key in [tcod.event.K_3, tcod.event.K_KP_3]:
+            if self.inventory_item_len > max_item_index:
+                self.inventory_page += 1
+            return
+        elif key in [tcod.event.K_1, tcod.event.K_KP_1]:
+            if min_item_index > 0:
+                self.inventory_page -= 1
+            return
+        elif key in [tcod.event.K_2, tcod.event.K_KP_2]:
+            return EquipmentEventHandler(self.engine)
+        else:
+            index = key - tcod.event.K_a
+
+            if 0 <= index <= self.items_per_page:
+                inventory_index = self.inventory_page * self.items_per_page + index
+                try:
+                    selected_item = self.inventory_items[inventory_index]
+                except IndexError:
+                    self.engine.message_log.add_message("Invalid entry", colors.INVALID)
+                    return None
+                return self.on_item_selected(selected_item)
         return super().ev_keydown(event)
 
     def on_item_selected(self, item: Item) -> Optional[ActionOrHandler]:
         raise NotImplementedError()
+
+    def get_item_start_and_end_index(self) -> Tuple[int, int]:
+        return self.inventory_page*self.items_per_page, \
+            self.inventory_page*self.items_per_page + self.items_per_page
+
+
+class EquipmentEventHandler(AskUserEventHandler):
+    """This handler lets the user select an item.
+
+    What happens then depends on the subclass.
+    """
+
+    TITLE = "Player Equipment"
+
+    def __init__(self, engine: Engine):
+        super().__init__(engine)
+
+        self.key_to_equipment_type_map = {
+            0: [EquipmentType.ONE_HANDED_WEAPON, EquipmentType.TWO_HANDED_WEAPON],
+            1: [EquipmentType.CUIRASS],
+            2: [EquipmentType.HELMET],
+            3: [EquipmentType.RIGHT_PAULDRON],
+            4: [EquipmentType.LEFT_PAULDRON],
+            5: [EquipmentType.RIGHT_HAND],
+            6: [EquipmentType.LEFT_HAND],
+            7: [EquipmentType.GREAVES],
+            8: [EquipmentType.BOOTS],
+            9: [EquipmentType.SHIELD]
+        }
+
+    def on_render(self, console: tcod.Console) -> None:
+        """Render an inventory menu, which displays the items in the inventory, and the letter to select them.
+        Will move to a different position based on where the player is located, so the player can always see where
+        they are.
+        """
+        super().on_render(console)
+
+        height = 30
+        x = 5
+        y = 5
+        width = 70
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=height,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0)
+        )
+
+        equipment_string_list = [
+            f"(a) Weapon: {self.engine.player.equipment.get_item_name_in_slot(WEAPON_SLOT)}",
+            f"(b) Cuirass: {self.engine.player.equipment.get_item_name_in_slot(CUIRASS_SLOT)}",
+            f"(c) Helmet: {self.engine.player.equipment.get_item_name_in_slot(HELMET_SLOT)}",
+            f"(d) Right Shoulder: {self.engine.player.equipment.get_item_name_in_slot(RIGHT_SHOULDER_SLOT)}",
+            f"(e) Left Shoulder: {self.engine.player.equipment.get_item_name_in_slot(LEFT_SHOULDER_SLOT)}",
+            f"(f) Right Hand: {self.engine.player.equipment.get_item_name_in_slot(RIGHT_HAND_SLOT)}",
+            f"(g) Left Hand: {self.engine.player.equipment.get_item_name_in_slot(LEFT_HAND_SLOT)}",
+            f"(h) Greaves: {self.engine.player.equipment.get_item_name_in_slot(GREAVES_SLOT)}",
+            f"(i) Boots: {self.engine.player.equipment.get_item_name_in_slot(BOOTS_SLOT)}",
+            f"(j) Shield: {self.engine.player.equipment.get_item_name_in_slot(SHIELD_SLOT)}",
+        ]
+
+        y_index = y + 1
+        for equipment_string in equipment_string_list:
+            console.print(x+1, y_index, equipment_string)
+            y_index += 1
+
+        console.print(x + 25, height + 3, "2) Inventory")
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        key = event.sym
+
+        if key in [tcod.event.K_2, tcod.event.K_KP_2]:
+            return InventoryActivateHandler(self.engine)
+
+        index = key - tcod.event.K_a
+
+        if 0 <= index <= 10:
+            return InventoryActivateHandler(
+                self.engine,
+                self.engine.player.inventory.get_equippables_by_type(
+                    self.key_to_equipment_type_map[index]))
+
+        return super().ev_keydown(event)
+
+    def on_item_selected(self, item: Item) -> Optional[ActionOrHandler]:
+        raise NotImplementedError()
+
+    def get_item_start_and_end_index(self) -> Tuple[int, int]:
+        pass
 
 
 class InventoryActivateHandler(InventoryEventHandler):
