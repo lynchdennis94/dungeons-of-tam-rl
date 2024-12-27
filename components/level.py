@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 class Level(BaseComponent):
     parent: Actor
+    skill_level_multiplier: int
 
     def __init__(self, current_level: int = 1, can_level_up: bool = False):
         self.current_level = current_level
@@ -35,6 +36,8 @@ class Level(BaseComponent):
         for skill in SkillEnum:
             self.skill_progress[skill] = 0
 
+        self.skill_level_multiplier = 5
+
     @property
     def requires_level_up(self) -> bool:
         return self.total_major_minor_skill_increases >= 10
@@ -44,7 +47,8 @@ class Level(BaseComponent):
         skill_level = self.parent.skills.skill_map[skill_to_increase][1]
         skill_level_factor = self.parent.character_class.skill_level_factors[skill_to_increase]
 
-        self.skill_progress[skill_to_increase] += base_increase_value / ((skill_level + 1) * skill_level_factor)
+        self.skill_progress[skill_to_increase] += (base_increase_value * self.skill_level_multiplier) / \
+                                                  ((skill_level + 1) * skill_level_factor)
 
         # If enough progress made, increase the skill and add a count to the right attribute
         if self.skill_progress[skill_to_increase] > 1.0:

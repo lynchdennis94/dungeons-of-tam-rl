@@ -27,7 +27,7 @@ class SkillEnum(Enum):
     ATHLETICS = auto()
     HAND_TO_HAND = auto()
     SHORT_BLADE = auto()
-    UNARMORED = auto(),
+    UNARMORED = auto()
     ILLUSION = auto()
     MERCANTILE = auto()
     SPEECHCRAFT = auto()

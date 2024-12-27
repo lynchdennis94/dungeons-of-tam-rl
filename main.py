@@ -8,20 +8,20 @@ import setup_game
 import exceptions
 import input_handlers
 
-
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50
 
 TILESET = tcod.tileset.load_tilesheet("resources/16x16-RogueYun-AgmEdit.png", 16, 16, tcod.tileset.CHARMAP_CP437)
 WINDOW_TITLE = "Yet Another Roguelike Tutorial"
 
+
 def save_game(handler: input_handlers.BaseEventHandler, filename: str) -> None:
     """If the current event handler has an active Engine then save it"""
     if isinstance(handler, input_handlers.EventHandler):
         handler.engine.save_as(filename)
 
-def main():
 
+def main():
     handler: input_handlers.BaseEventHandler = setup_game.MainMenu()
 
     with tcod.context.new_terminal(
